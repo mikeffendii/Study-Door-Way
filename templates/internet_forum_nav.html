@@ -1,0 +1,28 @@
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light" style="margin-top:65px;">
+	<div class="container">
+	  <a class="navbar-brand" href="#"><i class="fa fa-graduation-cap fa-2x" aria-hidden="true"></i>Studydoorway Discussion</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+	    <ul class="navbar-nav mx-auto font-weight-bold">
+	      <li class="nav-item">
+	        <a class="nav-link" href="{% url 'forum_home' %}"><i class="fa fa-question-circle mr-1" aria-hidden="true"></i>Questions</a>
+	      </li>
+	      <li class="nav-item">
+	        <a class="nav-link" href="{% url 'tags' %}"><i class="fa fa-tag mr-2" aria-hidden="true"></i>Tags</a>
+	      </li>
+	      <li class="nav-item">
+	        <a class="nav-link" href="{% url 'ask-question' %}"><i class="fa fa-comments-o mr-1" aria-hidden="true"></i>Ask Question</a>
+	      </li>
+	    </ul>
+	    <ul class="navbar-nav ml-auto">
+	    	<li class="nav-item">
+	    		<a class="nav-link" href="{% url 'user-dashboard' %}"><i class="fas fa-chart-line mr-1"></i>My Dashboard</a>
+	    	</li>
+	    </ul>
+	  </div>
+	</div>
+</nav>

@@ -1,0 +1,112 @@
+
+
+{% extends 'main.html'%}
+{% load static %}
+
+{% block content %}
+
+{% include 'internet_forum_nav.html' %}
+<style>
+   #popup {
+    display:none;
+    position:fixed;
+    margin:0 auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+  }
+  #close{
+    position:absolute;
+    top:0; 
+    right:0;
+    margin:10px;
+  }
+ 
+</style>
+
+<!-- popup image  -->
+<div id="popup">
+    <img src="{% static 'images/ask_question.png' %}" alt="popup">
+    <i id="close" class="fa fa-window-close fa-2x" aria-hidden="true" style="color:white"></i>
+</div>
+
+<!-- Search Section -->
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 offset-2">
+            <form>
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control form-control-lg" placeholder="Search" />
+                    <div class="input-group-append">
+                    <button class="btn btn-dark btn-lg" type="submit" id="button-addon2">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Question List -->  
+
+<div class="container">
+    {% for quest in quests %}
+    <div class="card mb-4 shadow">
+        <div class="card-body">
+            <h4 class="card-title"><a href="/detail/{{quest.id}}">{{quest.title}}</a></h4>
+            <p class="card-text">{{quest.detail|safe}}</p>
+            <p>
+              <p class="text-muted" style="font-size:small;font-style:italic;">by__
+                <a href="">{{quest.user.username}}</a>
+              </p>
+                <!-- <a href="#" class="mr-2" >{{quest.user.username}}</a> -->
+                <a href="/detail/{{quest.id}}" class="mr-2">{{quest.answer_set.count}} Answers</a>
+                <a href="/detail/{{quest.id}}" class="mr-2">{{quest.total_comments}} Comments</a>
+            </p>
+        </div>
+        <div class="card-footer" style="background: linear-gradient(to right, #ffccff 0%, #ffffff 100%);">
+            <small>{{quest.add_time}}</small>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% if quests.has_other_pages %}
+<!-- Pagination -->
+<nav class="my-3 container">
+    <ul class="pagination">
+        {% if quests.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page={{quests.previous_page_number}}">Previous</a></li>
+      {% endif %}
+      {% for i in quests.paginator.page_range %}
+      {% if quests.number == i %}
+      <li class="page-item active"><a class="page-link" href="#">{{i}}</a></li>
+      {% else %}
+      <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+      {% endif %}
+      {% endfor %}
+      {% if quests.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{quests.next_page_number}}">Next</a></li>
+      {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+
+<!-- popup image script  -->
+<script>
+
+  //with this first line we're saying: "when the page loads (document is ready) run the following script"
+  $(document).ready(function () {
+
+      //select the POPUP FRAME and show it
+      $("#popup").hide().fadeIn(2000);
+
+      //close the POPUP if the button with id="close" is clicked
+      $("#close").on("click", function (e) {
+          e.preventDefault();
+          $("#popup").fadeOut(1000);
+      });
+
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'main.html'%}
+{% load humanize %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+{% include 'internet_forum_nav.html'%}
+<div class="container py-3">
+    <div class="card mt-5">
+        <h5 class="card-header text-white" style="background: linear-gradient(to right, #009999 0%, #9999ff 100%);">Ask Question</h5>
+        <div class="card-body">
+            {% for msg in messages %}
+            <p class="text-success">{{msg}}</p>
+            {% endfor %}
+            <form method="post">
+                {% csrf_token %}
+                {{form.media}}
+                <div class="form-group">
+                    <label >Question Title</label><br>
+                    <label class="text-muted small ">Be specific and imagine you’re asking a question to another person</label>
+                    {{form.title|as_crispy_field}}
+                </div>
+                <hr style="border-top: 1px solid #F06529;">  
+
+                <div class="form-group"> 
+                    <label >Question Body</label><br>
+                    <label class="text-muted small">Include all the information someone would need to answer your question. insert Code with CodeSnippet tool in the toolbar</label>
+                    
+                    {{form.detail|as_crispy_field}}
+                </div>  
+                <hr style="border-top: 1px solid #F06529;">                
+                                        
+                <div class="form-group">
+                    <label class=" font-weight-bold">Question Tags</label><br>
+                    <label class="text-muted small ">Add up to 5 tags to describe what your question is about.</label>
+                    {{form.tags|as_crispy_field}}
+                    <label class="small" style="color:red;">Note : Seprate your tags with ( , ). for example python,django,bootstrap,php.</label>
+                </div>
+                <hr style="border-top: 1px solid #F06529;">
+                <button type="submit" class="btn btn-dark btn-lg btn-block">Submit Question</button>
+            </form> 
+        </div>
+    </div>
+</div>
+{% endblock %}

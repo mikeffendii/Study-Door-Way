@@ -1,0 +1,24 @@
+{% for std in students %}
+<h3>{{std.student.first_name}}</h3>
+{% for sa in std.attendance_set.all %}
+<h5> {{sa.created_at}} -- {{sa.present}}</h5>
+{% endfor %}
+{% endfor %}
+
+<table>
+
+	<tr>
+		<th>Student Name</th>
+		{% for at in att %}
+		<th>{{at}}</th>
+		{% endfor %}
+	</tr>
+	{% for std in students %}
+	<tr>
+		<td>{{std.student.first_name}}</td>
+		{% for sa in std.attendance_set.all %}
+		<td>{{sa.attendance}}</td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+</table>

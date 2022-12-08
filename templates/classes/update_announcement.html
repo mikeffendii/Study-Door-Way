@@ -1,0 +1,26 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+
+<link rel="stylesheet" type="text/css" href="{% static '/css/class_info.css' %}">
+
+{% include 'side_panel.html' %}
+<div class="container" style="margin-top:80px">
+	<div class="card border-primary mb-2">
+		<div class="card-body">
+			<h5 class="card-title">Announcement {{announcement.id}}</h5>
+			<div class="card-text text-muted"><small>Last updated {{announcement.last_updated|naturaltime}}</small></div>
+		</div>	
+	</div>
+	<form method="POST"  enctype="multipart/form-data" novalidate>
+		{% csrf_token %}
+		{{update_announcement_form|crispy}}
+		<button type="submit" class="btn btn-outline-success" name="update_announcement">Update</button>
+	</form>
+</div>
+
+{% endblock %}

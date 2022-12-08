@@ -1,0 +1,763 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load filename %}
+
+{% block content %}
+
+
+
+<link rel="stylesheet" type="text/css" href="{% static '/css/class_info.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static '/css/student_work.css' %}">	
+<script>
+    document.formHasErrors = {% if attendanceForm.errors %}true{% else %}false{% endif %};
+</script>	
+<section class=" " style="margin-top:75px">
+	
+	{% include 'side_panel.html' %}
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 ">
+                <nav class="nav-justified ">
+                  <div class="nav nav-tabs " id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="pop1-tab" data-toggle="tab" href="#pop1" role="tab" aria-controls="pop1" aria-selected="true">Stream</a>
+                    <a class="nav-item nav-link" id="pop2-tab" data-toggle="tab" href="#pop2" role="tab" aria-controls="pop2" aria-selected="false">Class Work</a>
+                    <a class="nav-item nav-link" id="pop3-tab" data-toggle="tab" href="#pop3" role="tab" aria-controls="pop3" aria-selected="false">People</a>
+                    <a class="nav-item nav-link" id="pop4-tab" data-toggle="tab" href="#pop4" role="tab" aria-controls="pop4" aria-selected="false">Grades</a>
+                    
+                  </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                  	<div class="tab-pane fade show active" id="pop1" role="tabpanel" aria-labelledby="pop1-tab">
+                        <div class="pt-3"></div>
+					    	<div class="row ">
+					    		<div class="col-md-12">
+					    		    <div class="card profile-card-2 rounded" id="cardshadow">
+					                    <div class="card-img-block">
+					                        <img class="img-fluid rounded" src="{{class.title_image.url}}" alt="Card image cap" />
+					                    </div>
+					                    <div class="card-body pt-4">
+					                        <img src="{{class.user.userprofile.profile_pic.url}}" alt="profile-image" class="profile"/>
+					                        <h4 class="card-title">{{class.class_name}}</h4>
+					                        <p class="card-text" style="text-align:left;">last updated<i class="fa fa-clock-o" aria-hidden="true"></i>{{class.last_updated}}</p>
+					                        <hr style="border-top: 1px solid #F06529;">
+					                        <p class="">This class has been created by <b>{{class.user.first_name}}</b> on <strong>{{class.date_created}}</strong></p>
+					                        <span>
+					                        	Student Key : <a href="">{{class.student_key}}</a>
+					                        </span>
+					                        
+					                       <!--  <div class="icon-block"><a href="#"><i class="fa fa-facebook"></i></a><a href="#"> <i class="fa fa-twitter"></i></a><a href="#"> <i class="fa fa-google-plus"></i></a></div> -->
+					                    </div>
+					                </div>
+					    		</div>						    		
+					    	</div>
+					    	<div class="container">
+		                      	<div class="row">
+						    		<div class="col-sm-2 rounded" id="cardshadow" style="margin-top:20px;margin-right:20px;overflow: auto;height:300px;">
+						    			<h6 class="card-title p-1 m-1">Upcoming</h6>
+						    			{% if assignments %}
+						    			{% for assignment in assignments %}
+						    			<div class="card p-1 m-1">
+						    				<a href="{% url 'student_work' class.id assignment.id %}">{{assignment.title}}</a><span class="badge badge-info">{{assignment.submissions.count}}</span>
+						    			</div> 
+						    			{% endfor %}
+						    			{% else %}
+						    			<small class="text-center text-muted m-2 p-2">No work due soon.</small>
+						    			{% endif %}
+						    		</div>
+						    		<div class="col rounded" style="margin-top:20px">
+						    			<div class="row rounded" id="cardshadow" >
+						    				<div class="col rounded">
+						    					<div class="chip">
+												  <img src="{{request.user.userprofile.profile_pic.url}}" alt="Person" width="96" height="96">
+												  <b data-toggle="collapse" data-target="#collapseAnnounce" aria-expanded="false"aria-controls="collapseAnnounce">Announce something to your class</b>
+												</div>
+
+							    				<div id="collapseAnnounce" class="collapse">
+													<!-- {{create_announcement_form|crispy}} -->
+													
+													<form method="POST",action="", enctype="multipart/form-data" novalidate>
+														{% csrf_token %}
+														<div class="group"> 
+															<input type="text" name="announcement_text" required>
+														      <span class="highlight"></span>
+														      <span class="bar"></span>
+														      <label>Announce something to your class</label>
+													    </div>
+
+	 	            									 <!-- adding attachments to announcement dropdown button -->
+
+													    <div class="dropdown" style="margin-bottom:10px;margin-left:50px">
+														  <button class="btn btn-outline-primary " type="button" id="dropDownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-paperclip"></i>
+														      Add
+														  </button>
+														  <div class="dropdown-menu" aria-labelledby="dropDownMenuButton">
+														    <a class="dropdown-item" href=""><i class="fas fa-link"></i> Link</a>
+														    <a class="dropdown-item" ><input type="file" name="announcement_file" /><i class="far fa-file-alt"></i> File</a>
+														    <a class="dropdown-item" href="#"><i class="fa fa-youtube-play"></i> Youtube</a>
+														  </div>
+														  <button style="float:right;" type="submit" class="btn btn-outline-success" name="announce">Post <i class="fa fa-paper-plane"></i></button>
+														</div>
+													</form>
+
+												</div>
+											</div>
+						    			</div>
+						    			{% if announcements %}
+						    			{% for announcement in announcements %}
+						    			<div class="row rounded" style="margin-top:20px" id="cardshadow">
+						    				<div class="col rounded">
+						    					<h4>
+						    					<span class="mt-4"style="float:right;">
+										    		<div class="dropleft">
+												    	<i class="fas fa-ellipsis-v" type="button" id="dropdownEditAssignment" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">	
+												    	</i>
+											    		<div class="dropdown-menu" aria-labelledby="dropdownEditAnnouncement">
+														    <a class="dropdown-item" href="{% url 'update_announcement' class.id announcement.id %}"><i class="far fa-edit"></i> Update</a>
+														    <a class="dropdown-item" href="{% url 'delete_announcement' class.id announcement.id %}"><i class="far fa-trash-alt"></i>  Delete</a>
+														</div>
+												    </div>
+											    </span>
+												</h4>
+						    					<div class="d-flex flex-column comment-section" id="myGroup">
+												  <div class="bg-white p-2">
+												      <div class="d-flex flex-row user-info"><img class="rounded-circle" src="{{announcement.user.userprofile.profile_pic.url}}" width="40">
+												          <div class="d-flex flex-column justify-content-start ml-2">
+												          	<span class="d-block font-weight-bold name">{{announcement.user.first_name}}</span>
+												          	<span class="date text-black-50">Shared publicly - {{announcement.announcement_date|timesince}} ago</span>
+												          	<span class="date text-black-50">Last Updated - {{announcement.last_updated|timesince}} ago</span>
+												          </div>
+												      </div>
+												      <div class="mt-2">
+												          <p class="comment-text">{{announcement.announcement_text}}</p>
+												      </div>
+												      {% if announcement.announcement_file %}
+
+												      <div class="mt-2 rounded" style="width:25%;overflow:hidden" id="cardshadow">
+												      	<div class="col">
+												      		<a href="{{ announcement.announcement_file.url }}" download>
+																<img  src="{% static 'images/files_image.png' %}" widht="40" height="40" alt="Download File">	
+															</a>
+															<a href="{{ announcement.announcement_file.url }}" download>
+																<b style="margin-top:20px;margin-left:20px;font-size:13px">Download Files</b>
+															</a>
+												      	</div>	
+												      	
+												      </div>
+												      {% endif %}
+												  </div>
+												  <div class="bg-white p-2" style="border-top: 1px solid #F06529">
+												      <div class="d-flex flex-row fs-12">
+												      	<form action="{% url 'announcement_likes' announcement.id class.id %}" method="POST" novalidate>
+												      		{% csrf_token %}
+												          <div class="like p-2 cursor">
+												          	{% if request.user not in announcement.likes.all %}
+												          	<button style="background-color: Transparent;" type="submit" name="announcement_id" value="{{ announcement.id }}" class="border-0"><i class="fa fa-thumbs-o-up" ></i><span class="ml-1">like</span> <span class="badge badge-pill badge-info">{{announcement.total_likes}}</span>
+												          	</button>
+												          	{% else %}
+												          	<button style="background-color: Transparent;" type="submit" name="announcement_id" value="{{ announcement.id }}" class="border-0"><i class="fa fa-thumbs-o-up" ></i><span class="ml-1">Unlike</span> <span class="badge badge-pill badge-info">{{announcement.total_likes}}</span>
+												          	</button> 
+												          	{% endif %}
+
+												          </div>
+												        </form>
+												          <div class="like p-2 cursor action-collapse" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-1{{announcement.id}}" href="#collapse-1{{announcement.id}}"><i class="far fa-comment-dots"></i><span class="ml-1">Comment</span> <span class="badge badge-pill badge-info">{{announcement.comments.all.count}}</span></div>
+												      </div>
+												  </div>
+												  <div id="collapse-1{{announcement.id}}" class="collapse" style="margin-bottom:10px;border-top:1px solid #F06529" data-parent="#myGroup">
+
+												  	{% if not announcement.comments.all %}
+												  	<div class="bg-white p-2 text-center">
+												  		<p>No Comments yet ... Add one </p>
+												  	</div>
+												  	{% else %}
+												  	{% for comment in announcement.comments.all %}
+												  	  <div class="bg-white p-2" style="margin-left:15px;">
+													      <div class="d-flex flex-row user-info"><img class="rounded-circle" src="{{comment.user.userprofile.profile_pic.url}}" width="40" style="border:1px solid #F06529">
+													          <div class="d-flex flex-column justify-content-start ml-2"><span class="d-block font-weight-bold name">{{comment.user.first_name}}</span><span class="date text-black-50">Commented - {{comment.comment_date|timesince}} ago</span></div>
+													      </div>
+													      <div class="mt-2 rounded" style="background-color:#f5f0f0">
+													          <p class="comment-text p-1 m-1">{{comment.comment_text}}</p>
+													      </div>
+													  </div>
+													  <hr style="border-top: 1px solid #d1c7c7;">
+													  {% endfor %}
+													  {% endif %}
+
+													  <form method="POST" action="{% url 'announcement_comments' announcement.id class.id %}">
+													  	{% csrf_token %}
+												      <div class="d-flex flex-row align-items-start" style="margin-left:25px;"><img class="rounded-circle" src="{{request.user.userprofile.profile_pic.url}}" width="40"><textarea class="form-control ml-1 shadow-none textarea" name="comment_text" required></textarea></div>
+												      <div class="mt-2 text-right"><button class="btn btn-primary btn-sm shadow-none" type="submit">Post comment <i class="fa fa-paper-plane"></i></button><button class="btn btn-outline-primary btn-sm ml-1 shadow-none" type="button">Cancel</button>
+												      </div>
+												  	  </form>
+												  </div>
+												</div>
+						    				</div>
+						    			</div>
+						    			{% endfor %}
+						    			{% endif %}
+						    		</div>
+							    </div>
+							</div>
+                      	</div>
+
+                    <!-- Class Work Tab -->
+
+                  	<div class="tab-pane fade" id="pop2" role="tabpanel" aria-labelledby="pop2-tab">
+                       <div class="pt-3"></div>
+                       <div class="row" style="margin:10px">
+							<div class="dropdown">
+							  <button class="btn btn-outline-primary " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-plus"></i>
+							      Create
+							  </button>
+							  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+							    <a class="dropdown-item" data-toggle="modal" data-target="#addAssignmentModal" ><i class="fas fa-file-alt"></i> Assignment</a>
+							    <a class="dropdown-item" data-toggle="modal" data-target="#addAssignmentQuizModal"><i class="far fa-file-alt"></i> Assignment Quiz</a>
+							    <a class="dropdown-item" href="#"><i class="fas fa-question"></i> Question</a>
+							  </div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-3">
+					            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+					                
+					                <a class="nav-link active" id="v-pills-assignments-tab" data-toggle="pill" href="#v-pills-assignments" role="tab" aria-controls="v-pills-assignments" aria-selected="true">Assignments</a>
+					                <a class="nav-link" id="v-pills-quizes-tab" data-toggle="pill" href="#v-pills-quizes" role="tab" aria-controls="v-pills-quizes" aria-selected="false">Quizes</a>
+					                <a class="nav-link" id="v-pills-lectures-tab" data-toggle="pill" href="#v-pills-lectures" role="tab" aria-controls="v-pills-lectures" aria-selected="false">Lectures</a>
+					                <a class="nav-link" id="v-pills-links-tab" data-toggle="pill" href="#v-pills-links" role="tab" aria-controls="v-pills-links" aria-selected="false">Links and turorials</a>
+					            </div>
+					        </div>
+					        <div class="col-md-9">
+					        	<div class="tab-content" id="v-pills-tabContent">
+
+					        		<!-- Assignments -->
+
+                					<div class="tab-pane fade show active" id="v-pills-assignments" role="tabpanel" aria-labelledby="v-pills-assignments-tab">
+                						<div class="card border-0" style="max-width: 60rem">
+											<h5 class="card-header mb-3 text-white" style="background: linear-gradient(to right, #3399ff 0%, #ffffff 100%);">Assignments</h5>
+											{% if assignments %}
+											{% for assignment in assignments%}
+											<div class="card border border-dark shadow-0 mb-3" style="max-width: 60rem">
+											  
+											  <div class="card-body text-dark">
+											    <h4 class="card-title" style="text-align:left;">{{assignment.title}}
+											    	
+											    	<span style="float:right;">
+											    		<div class="dropleft">
+													    	<i class="fas fa-ellipsis-v" type="button" id="dropdownEditAssignment" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">	
+													    	</i>
+												    		<div class="dropdown-menu" aria-labelledby="dropdownEditAssignment">
+															    <a class="dropdown-item" href="{% url 'update_assignment' class.id assignment.id %}"><i class="far fa-edit"></i> Update</a>
+															    <a class="dropdown-item" href="{% url 'delete_assignment' class.id assignment.id %}"><i class="far fa-trash-alt"></i>  Delete</a>
+															</div>
+													    </div>
+												    </span>
+											    </h4>
+											    <hr style="border-top: 1px solid #F06529;">
+
+
+											    <div title="Info" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}" aria-expanded="false"aria-controls="collapse{{ forloop.counter }}">
+												    <div class="card-text">
+												    	<p style="text-align:left;"><i class="fas fa-file-alt"></i>
+												    		{{assignment.title}}
+												    		<small class="text-muted">
+												    			Posted {{assignment.assigning_date}}
+												    		</small><i class="fa fa-clock-o" aria-hidden="true"></i>
+												    		<span style="float:right;color:#ff3333">
+												    			Due date: {{assignment.due_date}}
+												    		</span>
+												    	</p>
+												    	
+												    </div>
+												    <div style="clear: both"></div>
+												</div>
+
+												<div id="collapse{{ forloop.counter }}" class="collapse">
+													<p class="card-text">
+														{% if assignment.file %}
+														<a style="margin-right:3px" href="{{ assignment.file.url }}" target="_blank">
+															<i class="fas fa-eye"> view file</i>
+														</a>
+														<a href="{{ assignment.file.url }}">
+															<i class="fas fa-file-download"> download file</i>
+														</a>
+														{% endif %}
+													</p>
+													<p class="card-text">Instructions : <small class="text-muted">{{assignment.instruction}}</small></p>
+													<hr style="border-top: 1px solid #8c8b8b;">
+													<a href="{% url 'student_work' class.id assignment.id %}">Student Work</a>
+												</div>
+
+											  </div>
+											</div>
+											{% endfor %}
+											{% endif %}
+										</div>	
+                					</div>
+
+                					<!-- Quizes Section  -->
+
+                					<div class="tab-pane fade" id="v-pills-quizes" role="tabpanel" aria-labelledby="v-pills-quizes-tab">
+
+										<div class="card border-0 " style="max-width: 60rem">
+											<h5 class="card-header mb-3 text-white" style="background: linear-gradient(to right, #3399ff 0%, #ffffff 100%);">Quizes</h5>
+											{% if quizes %}
+											{% for quiz in quizes %}
+											<div class="card border border-dark shadow-0 mb-3" style="max-width: 60rem">
+												<div class="card-body text-dark">
+													<h4 class="card-title" style="text-align:left;">{{quiz.name}}
+											    	
+												    	<span style="float:right;">
+												    		<div class="dropleft">
+														    	<i class="fas fa-ellipsis-v" type="button" id="dropdownEditQuiz" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">	
+														    	</i>
+													    		<div class="dropdown-menu" aria-labelledby="dropdownEditQuiz">
+																    <a class="dropdown-item" href="{% url 'add_question' class.id quiz.id %}"><i class="far fa-edit"></i> Add Questions</a>
+																    <a class="dropdown-item" href=""><i class="far fa-trash-alt"></i>  Delete</a>
+																</div>
+														    </div>
+													    </span>
+												    </h4>
+												    <hr style="border-top: 1px solid #F06529;">
+												    <p class="text-muted">
+												    	Topic: {{quiz.topic}}
+												    </p>
+												    <p class="text-muted">Number of questions: {{quiz.number_of_questions}}</p>
+												    <p class="text-muted">Required score to pass: {{quiz.required_score_to_pass}} % </p>
+												    <p class="text-muted">Difficulty: {{quiz.difficulty}}</p>
+												    <p class="text-muted">Attempted by: {{quiz.result_set.all.count}} Student{{quiz.result_set.all.count|pluralize}}</p>
+												</div>
+												<div class="card-footer">
+											      <small class="text-muted">Created: {{quiz.created|naturaltime}}</small>
+											    </div>
+											</div>
+											{% endfor %}
+											{% endif %}
+										</div>
+
+                					</div>
+
+                					<!-- Lectures  -->
+
+                					<div class="tab-pane fade" id="v-pills-lectures" role="tabpanel" aria-labelledby="v-pills-lectures-tab">
+                						<div class="text-center">
+                							<button type="button" data-toggle="modal" data-target="#uploadLecturesModal" class="btn btn-outline-primary">Upload Lectures</button>
+                						</div>
+                						{% for l in lectures %}
+                						<div class="card border-0 m-3" style="max-width: 60rem">
+											<h5 class="card-header mb-3 text-white" style="background: linear-gradient(to right, #3399ff 0%, #ffffff 100%);">{{l.title}}</h5>
+											<div class="card-body">
+												<div class="mt-2 rounded" style="width:25%;overflow:hidden" id="cardshadow">
+											      	<div class="col">
+											      		<a href="{{ l.files.url }}" download>
+															<img  src="{% static 'images/files_image.png' %}" widht="40" height="40" alt="Download File">	
+														</a>
+														<a href="{{ l.files.url }}" download>
+															<b style="margin-top:20px;margin-left:20px;font-size:13px">Download Files</b>
+														</a>
+											      	</div>
+											      	<div class="col">
+											      		<b style="margin-top:20px;margin-left:20px;font-size:10px">{{l.files|getfilename}}</b>
+											      	</div>	 	
+											    </div>
+											</div>
+
+										</div>
+										{% endfor %}
+                					</div>
+					        	</div>
+							</div>
+						</div>
+                  	</div>
+                  	<div class="tab-pane fade" id="pop3" role="tabpanel" aria-labelledby="pop3-tab">
+                       	<div class="pt-3"></div>
+						<div class="card border-0">
+							<div class="card-header text-white"  style="background: linear-gradient(to right, #3399ff 0%, #ffffff 100%);">
+								<h4><i class="fas fa-chalkboard-teacher pr-2" style="color:white"></i>Instructors 
+									<span class="float-right">
+										
+										<a href="{% url 'attendance' class.id %}">Attendance</a><i class="fas fa-clipboard-list pl-3" style="color:tomato"></i>
+									</span>
+								</h4>
+
+							</div>
+							
+							<div class="card-body">
+								<h6 class="card-subtitle mb-2 text-muted">{{instructors.count}} Instructor{{instructors.count|pluralize}} are in this course</h6>
+								<p class="card-text">
+									<div class="avatar-group">
+										{% for instructor in instructors %}
+										<div class="row">
+											<div class="col-md-12 ">
+												<a>
+													<div class="chip">
+														<img src="{{instructor.instructor.userprofile.profile_pic.url}}" alt="Avatar" class="md-avatar rounded-circle">
+														<b class="text-muted font-size-sm">{{instructor.instructor.first_name}}</b>
+													</div>
+												</a>
+											</div>
+										</div>
+										{% endfor %}
+									</div>
+								</p>
+							</div>
+						</div>
+						<!-- End of Total Instructors Card  -->
+
+						<!-- Total Students Card  -->
+
+						<div class="card border-0">
+							<div class="card-header text-white"  style="background: linear-gradient(to right, #3399ff 0%, #ffffff 100%);">
+								<h4><i class="fas fa-users pr-2" style="color:white"></i>Students</h4>
+							</div>
+							<div class="card-body">
+								<h6 class="card-subtitle mb-2 text-muted">{{students.count}} student{{students.count|pluralize}} are enrolled in this course</h6>
+								
+								<p class="card-text">
+									<div class="avatar-group">
+										{% for student in students %}
+										<div class="row"  style="border-left:3px solid #F06529;margin-top:5px;">
+											<div class="col-md-12 ">
+												<a>
+													<div class="chip">
+														<img src="{{student.student.userprofile.profile_pic.url}}" alt="Avatar" class="md-avatar rounded-circle">
+														<b class="text-muted font-size-sm">{{student.student.first_name}} {{student.student.last_name}}</b>
+													</div>
+													<span class="fa fa-clock-o" style="color:#7bc5ed;font-size:small;">
+														Joined {{student.added_at|naturaltime}}
+													</span>
+												</a>
+											</div>
+										</div>
+										{% endfor %}
+									</div>
+								</p>
+							</div>
+						</div>
+						<!-- End of Total Students Card  -->
+                  </div>
+                  <!-- Student Grades Section Start  -->
+                  <div class="tab-pane fade" id="pop4" role="tabpanel" aria-labelledby="pop4-tab">
+                  	<div class="bg pt-3">
+                  		{% if not students %}
+                  		<image src="{% static 'images/no students.png' %}" alt="Studydoorway" style="width:100%; height:100%">
+                  		{% endif %}
+                  		<div class="row">
+                  			<div class="col">
+	                  			<div class="card-counter info">
+					        		<i class="fa fa-address-card"></i>
+					        		<span class="count-numbers">Student Grades</span>
+					        		<span class="count-name">{{class.class_name}}</span>
+					      		</div>
+				      		</div>
+				      	</div>
+                  		
+
+
+                  		<hr style="border-top: 1px solid tomato;margin-top:10px;">
+
+					    <div class="row">
+
+					    	<!-- Total students section -->
+
+					        <div class="col-lg-4">
+					          	<div class="articles card">
+						            <div class="card-header d-flex align-items-center text-white" style="background: linear-gradient(to right, #3399ff 0%, #ffffff 100%);">
+						              	<div class="container ml-1 mt-1">
+											<h6>Total Students <span class="badge badge-dark float-right">{{students.count}}</span></h6>
+										</div>
+						            </div>
+						            <div class="card-body no-padding">
+						            	{% for s in students %}
+						              	<div class="item d-flex align-items-center">
+							                <div class="image">
+							                	<img src="{{s.student.userprofile.profile_pic.url}}" alt="..." class="img-fluid rounded-circle">
+							                </div>
+							                <div class="text">
+							                	<a href="#"><h3 class="h5">{{s.student.first_name}} {{s.student.last_name}}</h3></a>
+							                	<small>Joined. {{s.added_at}}</small>
+							                </div>
+						              	</div>
+						              	{% endfor %}						         
+						            </div>
+					          	</div>
+					        </div>
+
+					        <!-- Students Grades section -->
+
+					        <div class="col-lg-8">
+					          	<div class="articles card">
+						            <div class="card-header d-flex align-items-center text-white" style="background: linear-gradient(to right, #3399ff 0%, #ffffff 100%);">
+						              	<div class="container ml-1 mt-1">
+											<h6>Students Grades</h6>
+										</div>
+						            </div>
+						            <div class="container py-5">
+									    <div class="row">
+									        <div class="col-md-8 offset-2">
+									            <form>
+									                <div class="input-group">
+									                    <input type="text" name="s" class="form-control form-control-lg" placeholder="Search" />
+									                    <div class="input-group-append">
+									                    <button class="btn btn-dark btn-lg" type="submit" id="button-addon3">Search</button>
+									                    </div>
+									                </div>
+									            </form>
+									        </div>
+									    </div>
+									</div>
+					            	<div class="card-body no-padding">
+					            		{% for s in students %}
+					              		<div class="item d-flex align-items-center col-md-5">
+					                		<div class="image">
+					                			<img src="{{s.student.userprofile.profile_pic.url}}" alt="..." class="img-fluid rounded-circle">
+					                		</div>
+							                <div class="text"><a href="#">
+							                    <h3 class="h5">{{s.student.first_name}} {{s.student.last_name}}</h3></a><small>Joined. {{s.added_at}}</small>
+							                </div>
+					              		</div>
+					              		<div class="row">
+					              			{% for sub in s.submission_set.all %}
+					              			<div class="col-sm-3"  onclick="location.href='{% url 'student_work' class.id sub.assignment.id %}';" style="cursor: pointer;">
+										      <div class="card-counter primary">
+										        <i class="fa fa-file-text-o"></i>
+										        <span class="count-numbers">{{sub.grade}}/{{sub.assignment.points}}</span>
+										        <span class="count-name">{{sub.assignment}}</span>
+										      </div>
+										    </div>
+					              			{% endfor %}
+					              			{% for q in s.result_set.all %}
+					              			<div class="col-sm-3">
+										      <div class="card-counter success">
+										        <i class="fa fa-question"></i>
+										        <span class="count-numbers">{{q.score|floatformat:"1"}} %</span>
+										        <span class="count-name">{{q.quiz.name}}</span>
+										      </div>
+										    </div>
+										    {% endfor %}
+										    {% for mf in s.midfinalmarks_set.all %}
+										    <div class="col-sm-3">
+										      <div class="card-counter info">
+										        <i class="fas fa-file-invoice"></i>
+										        <span class="count-numbers">{{mf.mid_marks|floatformat:"1"}}</span>
+										        <span class="count-name">Mid marks</span>
+										      </div>
+										    </div>
+										    <div class="col-sm-3">
+										      <div class="card-counter info">
+										        <i class="fas fa-file-invoice"></i>
+										        <span class="count-numbers">{{mf.final_marks|floatformat:"1"}}</span>
+										        <span class="count-name">Final marks</span>
+										      </div>
+										    </div>
+										    {% endfor %}
+					              		</div>
+					              		<div class="row m-4 border">
+					              			<i class="far fa-edit fa-2x m-2" style="color:tomato" aria-hidden="true"></i>
+					              			<a class="mt-3" onMouseOver="this.style.color='tomato'" onMouseOut="this.style.color='#00F'" href="{% url 'final_marks' class.id s.id %}">Enter Mid/Final Marks</a>
+					              			<i class="fa fa-file-pdf-o fa-2x m-2" style="color:tomato;padding-left:100px" aria-hidden="true"></i>
+					              			<a class="mt-3" onMouseOver="this.style.color='tomato'" onMouseOut="this.style.color='#00F'" href="{% url 'print_pdf' class.id s.id %}">Print Result in PDF</a>
+					              			
+					              		</div>
+					              		<hr style="border-top: 1px solid tomato;margin-top:10px;">
+					              		{% endfor %}	  
+					            	</div>
+					          	</div>
+					        </div>
+					    </div>
+                  	</div>
+                  </div>
+                 <!--  Student Grades Section End  -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- The AddFile to announcement Modal -->
+
+
+<div class="modal fade" id="addFileModal">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+	  
+	    <!-- Modal Header -->
+	    <div class="modal-header">
+	      <h4 class="modal-title">Add File </h4>
+	      <button type="button" class="close" data-dismiss="modal">&times;</button>
+	    </div>
+	    
+
+	    <form method="POST",action="", enctype="multipart/form-data">
+	    	<!-- Modal body -->
+		    <div class="modal-body">
+	    		<input type="file" name="announcement_file" />	
+		    </div>
+		    
+		    <!-- Modal footer -->
+		    <div class="modal-footer">
+		      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+		      <button type="submit" class="btn btn-outline-success" name="edit_class">Save</button>
+		    </div>
+	    </form>
+	    
+	  </div>
+	</div>
+</div>
+
+
+
+
+
+<!-- The Edit class Modal -->
+<div class="modal fade" id="editClassModal">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+	  
+	    <!-- Modal Header -->
+	    <div class="modal-header">
+	      <h4 class="modal-title">Edit Classroom</h4>
+	      <button type="button" class="close" data-dismiss="modal">&times;</button>
+	    </div>
+	    
+
+	    <form method="POST",action="", enctype="multipart/form-data">
+	    	<!-- Modal body -->
+		    <div class="modal-body">
+	    		{% csrf_token %}
+	      		{{create_class_form|crispy}}
+		    </div>
+		    
+		    <!-- Modal footer -->
+		    <div class="modal-footer">
+		      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+		      <button type="submit" class="btn btn-outline-success" name="edit_class">Save</button>
+		    </div>
+	    </form>
+	    
+	  </div>
+	</div>
+</div>
+
+
+
+<!-- The Add Assignment Modal -->
+<div class="modal fade" id="addAssignmentModal">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+	  
+	    <!-- Modal Header -->
+	    <div class="modal-header">
+	      <h4 class="modal-title">Create Assignment</h4>
+	      <button type="button" class="close" data-dismiss="modal">&times;</button>
+	    </div>
+	    
+
+	    <form method="POST",action="", enctype="multipart/form-data">
+	    	<!-- Modal body -->
+		    <div class="modal-body">
+	    		{% csrf_token %}
+	      		{{create_assignment_form|crispy}}
+		    </div>
+		    
+		    <!-- Modal footer -->
+		    <div class="modal-footer">
+		      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+		      <button type="submit" class="btn btn-outline-success" name="create_assignment">Save</button>
+		    </div>
+	    </form>
+	    
+	  </div>
+	</div>
+</div>
+
+<!-- The Add Assignment Quiz Modal -->
+<div class="modal fade" id="addAssignmentQuizModal">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+	  
+	    <!-- Modal Header -->
+	    <div class="modal-header">
+	      <h4 class="modal-title">Create Assignment Quiz</h4>
+	      <button type="button" class="close" data-dismiss="modal">&times;</button>
+	    </div>
+	    
+
+	    <form method="POST",action="", enctype="multipart/form-data">
+	    	<!-- Modal body -->
+		    <div class="modal-body">
+	    		{% csrf_token %}
+	      		{{create_quiz_form|crispy}}
+		    </div>
+		    
+		    <!-- Modal footer -->
+		    <div class="modal-footer">
+		      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+		      <button type="submit" class="btn btn-outline-success" name="create_quiz">Save</button>
+		    </div>
+	    </form>
+	    
+	  </div>
+	</div>
+</div>
+
+<!-- Upload Lectures Modal -->
+<div class="modal fade" id="uploadLecturesModal">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+	  
+	    <!-- Modal Header -->
+	    <div class="modal-header">
+	      <h4 class="modal-title">Upload Lectures</h4>
+	      <button type="button" class="close" data-dismiss="modal">&times;</button>
+	    </div>
+	    
+
+	    <form method="POST",action="", enctype="multipart/form-data">
+	    	{% csrf_token %}
+	    	<!-- Modal body -->
+		    <div class="modal-body">
+		    	<div class="group"> 
+					<input type="text" name="lecture_title" required>
+				      <span class="highlight"></span>
+				      <span class="bar"></span>
+				      <label>Lectures Title</label>
+				      <small class="text-muted">for example WEEK 1 LECTURES</small>
+				    <input type="file" multiple name="lecture_files" required>
+			    </div>	
+		    </div>
+		    
+		    <!-- Modal footer -->
+		    <div class="modal-footer">
+		      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+		      <button type="submit" class="btn btn-outline-success" name="upload_lectures">Upload</button>
+		    </div>
+	    </form>
+	    
+	  </div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$( document ).ready(function() {
+		console.log('running ')
+		$('a[data-toggle="tab"]').click(function (e) {
+		    e.preventDefault();
+		    $(this).tab('show');
+		});
+
+		$('a[data-toggle="tab"]').on("shown.bs.tab", function (e) {
+		    var id = $(e.target).attr("href");
+		    localStorage.setItem('selectedTab', id)
+		});
+
+		var selectedTab = localStorage.getItem('selectedTab');
+		if (selectedTab != null) {
+		    $('a[data-toggle="tab"][href="' + selectedTab + '"]').tab('show');
+		}
+	});
+</script>
+{% endblock %}

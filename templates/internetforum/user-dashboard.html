@@ -1,0 +1,163 @@
+{% extends 'main.html'%}
+{% load humanize %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+{% include 'internet_forum_nav.html'%}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                
+                <a class="nav-link active" id="v-pills-questions-tab" data-toggle="pill" href="#v-pills-questions" role="tab" aria-controls="v-pills-questions" aria-selected="true">Questions</a>
+                <a class="nav-link" id="v-pills-answers-tab" data-toggle="pill" href="#v-pills-answers" role="tab" aria-controls="v-pills-answers" aria-selected="false">Answers</a>
+                <a class="nav-link" id="v-pills-comments-tab" data-toggle="pill" href="#v-pills-comments" role="tab" aria-controls="v-pills-comments" aria-selected="false">Comments</a>
+                <a class="nav-link" id="v-pills-upvotes-tab" data-toggle="pill" href="#v-pills-upvotes" role="tab" aria-controls="v-pills-upvotes" aria-selected="false">UpVotes</a>
+                <a class="nav-link" id="v-pills-downvotes-tab" data-toggle="pill" href="#v-pills-downvotes" role="tab" aria-controls="v-pills-downvotes" aria-selected="false">DownVotes</a>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+                    <canvas id="myChart" width="450" height="100"></canvas>
+            </div>
+            <div class="tab-content" id="v-pills-tabContent">
+                <!-- Questions -->
+                <div class="tab-pane fade show active" id="v-pills-questions" role="tabpanel" aria-labelledby="v-pills-questions-tab">
+                    <div class="card">
+                        <h5 class="card-header text-white" style="background: linear-gradient(to right, #009999 0%, #9999ff 100%);">My Questions <span class="badge badge-primary">{{quests.count}}</span></h5>
+                        <div class="card-body">
+                            {% for quest in quests %}
+                            <p><a href="/detail/{{quest.id}}">{{quest.title}}</a></p>
+                            <hr />
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <!-- Answers -->
+                <div class="tab-pane fade" id="v-pills-answers" role="tabpanel" aria-labelledby="v-pills-answers-tab">
+                    <div class="card">
+                        <h5 class="card-header text-white" style="background: linear-gradient(to right, #009999 0%, #9999ff 100%);">My Answers <span class="badge badge-primary">{{answers.count}}</span></h5>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Question</th>
+                                    <th>Answer</th>
+                                </tr>
+                                {% for ans in answers %}
+                                <tr>
+                                    <td><a href="/detail/{{ans.question.id}}">{{ans.question.title}}</a></td>
+                                    <td><a href="/detail/{{ans.question.id}}">{{ans.detail|safe}}</a>
+                                    	<span class="mr-3"><span class="comment-count-{{answer.id}}">{{ans.comment_set.count}}</span> Comment{{ans.comment_set.count|pluralize}}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="v-pills-comments" role="tabpanel" aria-labelledby="v-pills-comments-tab">
+                    <div class="card">
+                        <h5 class="card-header text-white" style="background: linear-gradient(to right, #009999 0%, #9999ff 100%);">My Comments <span class="badge badge-info">{{comments.count}}</span></h5>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Question</th>
+                                    <th>Answer</th>
+                                    <th>Comment</th>
+                                </tr>
+                                {% for comment in comments %}
+                                <tr>
+                                    <td><a href="/detail/{{comment.answer.question.id}}">{{comment.answer.question.title}}</a></td>
+                                    <td><a href="/detail/{{comment.answer.questionans.question.id}}">{{comment.answer.detail|safe}}</a></td>
+                                    <td><a href="/detail/{{comment.answer.question.id}}">{{comment.comment}}</a></td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="v-pills-upvotes" role="tabpanel" aria-labelledby="v-pills-upvotes-tab">
+                    <div class="card">
+                        <h5 class="card-header text-white" style="background: linear-gradient(to right, #009999 0%, #9999ff 100%);">My Upvotes <span class="badge badge-info">{{upvotes.count}}</span></h5>
+                        <div class="card-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Question</th>
+                            <th>Answer</th>
+                        </tr>
+                        {% for upvote in upvotes %}
+                        <tr>
+                            <td><a href="/detail/{{upvote.answer.question.id}}">{{upvote.answer.question.title}}</a></td>
+                            <td><a href="/detail/{{upvote.answer.question.id}}">{{upvote.answer.detail|safe}}</a></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="v-pills-downvotes" role="tabpanel" aria-labelledby="v-pills-downvotes-tab">
+                    <div class="card">
+                        <h5 class="card-header text-white" style="background: linear-gradient(to right, #009999 0%, #9999ff 100%);">My Downvotes <span class="badge badge-info">{{downvotes.count}}</span></h5>
+                        <div class="card-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Question</th>
+                            <th>Answer</th>
+                        </tr>
+                        {% for downvote in downvotes %}
+                        <tr>
+                            <td><a href="/detail/{{downvote.answer.question.id}}">{{downvote.answer.question.title}}</a></td>
+                            <td><a href="/detail/{{downvote.answer.question.id}}">{{downvote.answer.detail|safe}}</a></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: [{% for l in label %}'{{l}}',{% endfor %}],
+        datasets: [{
+            label: ['Total'],
+            data: [{% for d in data %}{{d}},{% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>
+{% endblock %}

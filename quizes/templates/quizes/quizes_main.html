@@ -1,0 +1,50 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+
+
+
+{% block content %}
+
+<div class="container" style="margin-top:80px">
+	<!-- Modal -->
+	<div class="modal fade" id="quizStartModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLabel">Start Quiz ?</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body" id="modal-body-confirm"></div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+	        <button type="button" id="start-button" class="btn btn-success">Yes</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	<div class="h1">Quiz List</div>
+	<hr>
+	{% for quiz in object_list %}
+	<button
+		class="btn btn-link modal-button"
+		data-pk="{{quiz.pk}}"
+		data-quiz="{{quiz.name}}"
+		data-questions="{{quiz.number_of_questions}}"
+		data-difficulty="{{quiz.difficulty}}"
+		data-time="{{quiz.time}}"
+		data-pass="{{quiz.required_score_to_pass}}"
+		data-class_id="{{quiz.class_room.id}}"
+		data-toggle="modal"
+		data-target="#quizStartModal">
+
+		{{quiz.name}}
+	</button><br>
+	{% endfor %}
+</div>
+
+<script src="{% static 'quizes/quizes_main.js' %}" defer></script>
+{% endblock %}

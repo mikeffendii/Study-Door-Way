@@ -1,0 +1,142 @@
+{% extends 'main.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="{% static '/css/class_info.css' %}">
+<script>
+    document.formHasErrors = {% if attendanceForm.errors %}true{% else %}false{% endif %};
+</script>
+{% include 'side_panel.html' %}
+<div class="container" style="margin-top:90px">
+	
+	
+	<div class="card">
+		<div class="card-header">
+			<h5 class="card-title">Student attendance <span class="badge badge-pill badge-primary">{{class_room.class_name}}</span>
+				<button type="submit" id="submit-attendance" class="btn btn-danger m-2 float-right">Submit Attendance</button> 
+			 </h5>
+			<div class="card-tools">
+        <div class="input-group input-group-sm" style="width: 250px;">
+        	{% for msg in messages %}
+      		<p class="text-success">{{msg}}</p>
+      		{% endfor %}
+        	<form method="POST" id="myform">
+        		<label >Select Date for attendance</label>
+        		{% csrf_token %}
+        		{{attendanceForm|crispy}}
+        		<button type="submit" id="submit-date" name="submit-date" class="btn btn-success">Select</button>
+        	</form>
+          <!-- <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
+          </div> -->
+        </div>
+      </div>
+      <div id="att-date" class="pt-3">
+			</div>
+			<a class="text-center" href="{% url 'view_attendance' class_room.id %}">View Attendance</a>
+		</div>
+		<div class="card-body table-responsive p-0">
+			<table class="table table-sm table-hover text-nowrap ">
+				<thead class="thead-light">
+					<tr>
+						<th>Student Name</th>
+						<th>Date Joined</th>
+						<th>Email</th>
+						<th>Attendance</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% csrf_token %}
+					{% for student in students %}
+					<tr>
+						<td>{{student.student.first_name}} {{student.student.last_name}}</td>
+						<td>{{student.added_at}}</td>
+						<td>{{student.student.email}}</td>
+						<td>
+							<input type="checkbox" name="student_id[]" id="present" value="{{student.id}}" required><b>P</b>
+							<input type="checkbox" name="student_id[]" id="absent" value="{{student.id}}"><b>A</b>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>	
+</div>
+
+
+
+
+
+
+<script type="text/javascript">
+	console.log('attendance.js')
+	$(document).ready(function(){
+		var attDate = $('input[name="created_at"]').val();
+		const att_date = document.getElementById('att-date');
+		if (attDate === ""){
+			document.getElementById('submit-attendance').disabled=true;
+		}
+		else{
+			att_date.innerHTML += `<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+										<p>You are going to submit attendance for the date <b style="color:black">${attDate}</b></p>
+										<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+										    <span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									`
+		}
+		var formError = {% if attendanceForm.errors %}true{% else %}false{% endif %};
+		if (formError){
+			document.getElementById('submit-attendance').disabled=true$("#myform")[0].reset();		}
+		var attendance = []
+		const attendanceBox = document.getElementById('attendance-box')
+		$('#submit-attendance').click(function(){
+			var attDate = $('input[name="created_at"]').val();
+			var p_ids = [];
+			var a_ids = [];
+			var csrf = $('input[name=csrfmiddlewaretoken').val();
+			$('#present:checked').each(function(i){
+				p_ids[i]=$(this).val();
+				console.log('p_ids'+ p_ids);
+			})
+			$('#absent:checked').each(function(i){
+				a_ids[i]=$(this).val();
+				console.log('a_ids'+ a_ids);
+			})
+			
+			
+				$.ajax({
+				url:window.location.href,
+				method:'POST',
+				data:{
+					attDate,
+					p_ids,
+					a_ids,
+					csrfmiddlewaretoken:csrf,
+				},
+				success:function(response){
+					$("#myform")[0].reset();
+					attendance = response.attendance
+					console.log(attendance)
+					location.reload()
+				},
+			})	
+			
+			
+		})
+		$("#myform")[0].reset();
+	})
+</script>
+
+
+{% endblock content %}
+

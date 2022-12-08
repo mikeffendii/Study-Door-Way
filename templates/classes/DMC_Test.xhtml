@@ -1,0 +1,110 @@
+{% load static %}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <title> StudyDoorWay Result Evaluation </title>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 95%;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+
+<body>
+    <img style="text-align: center;" src="{% static 'images/studydoorway_navlogo.png' %}" alt="site Logo" width="100" height="40" />
+    <p style="text-align: right;"><img src="{{student.student.userprofile.profile_pic.path}}" alt="Student Picture" width="70" height="70" />
+    </p>
+    <h1 style="text-align: center;"><b>Studydoorway Result Evaluation</b></h1>
+    <div style="padding-left: 20px;">
+        <p style="text-align: center;">
+            <strong>Instructor's Name:</strong> <u>{{class.user}}</u> 
+            <strong>Class Name:</strong> <u>{{class.class_name}}</u> <br />
+            <strong>Subject:</strong> <u>{{class.subject}}</u>
+            <strong>Section:</strong> <u>{{class.section}}</u> <br />
+            <strong>Created:</strong> <u>{{class.date_created}}</u> <br />
+        </p>
+        <hr style="border-top: 1px solid tomato;margin-top:10px;"><br />
+        <p style="text-align:  center;">
+            <strong>Student's Name:</strong> <u>{{student.student.first_name}} {{student.student.last_name}}</u> 
+            <strong>Student's Email:</strong> <u>{{student.student.email}}</u> <br />
+            <strong>Faculty:</strong> <u>Basic and Applied Sciences</u>
+            <strong>Department:</strong> <u>Software Engineering</u> <br />
+            <strong>Degree Program:</strong> <u>BS in Software Engineering</u> <br />
+        </p>
+    </div>
+
+    <div>
+        <table>
+            <tr>
+                <th>Assignmnt Title</th>
+                <th>Marks Obtained </th>
+                <th>Out Of </th>
+            </tr>
+            {% for sub in student.submission_set.all %}
+            <tr>
+                <td>{{sub.assignment}}</td>
+                <td>{{sub.grade}} </td>
+                <td>{{sub.assignment.points}}</td>
+            </tr>
+            {% endfor %}
+            <br />
+            <tr>
+                <th>Quiz Title</th>
+                <th>Obtained Score %</th>
+                <th>Required Score %</th>
+            </tr>
+            {% for q in student.result_set.all %}
+            <tr>
+                <td>{{q.quiz.name}}</td>
+                <td>{{q.score|floatformat:"1"}} %</td>
+                <td>{{q.quiz.required_score_to_pass}} %</td>
+            </tr>
+            {% endfor %}
+            {% for f in student.midfinalmarks_set.all %}
+            <tr>
+                <th>Exam Title</td>
+                <th>Marks Obtained</th>
+                <th>Out of</th>
+            </tr>
+            <tr>
+                <td>Mid Term Marks</td>
+                <td>{{f.mid_marks}}</td>
+                <td>{{f.mid_marks_out_of}}</td>
+            </tr>
+            <tr>
+                <td>Final Term Marks</td>
+                <td>{{f.final_marks}}</td>
+                <td>{{f.final_marks_out_of}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div>
+        <p>
+            <strong>Percentage of Assignments:</strong> <u>{{ass_per|floatformat:"2"}}%</u>
+            <strong>| Percentage of Quizes:</strong> <u>{{quiz_per|floatformat:"2"}}%</u>
+            <strong>| Percentage of Mid Term:</strong> <u>{{mid_per|floatformat:"2"}}%</u>
+            <strong>| Percentage of Final Term:</strong> <u>{{final_per|floatformat:"2"}}%</u>
+        </p>
+    </div>
+    <p style="text-align: center;padding-top: 10px"><b>Status: </b> <u>Course Completed with <strong>{{total_per|floatformat:"2"}}%</strong></u></p>
+
+
+</body>
+
+</html>

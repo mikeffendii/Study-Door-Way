@@ -1,0 +1,163 @@
+{%extends 'main.html'%}
+{%load static %}
+{%load humanize %}
+
+{%block content %}
+<link href="{% static 'css/base.css' %}" rel="stylesheet">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+<section style="margin-top:50px">
+<div class="container-fluid">
+<div class="page-content page-container" id="page-content" >
+    <div class="padding">
+        <div class="row container d-flex justify-content-center">
+            <div class="col-md-12">
+                <div class="box box-warning direct-chat direct-chat-warning">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Chat -{{course.class_name}}</h3>
+                        <div class="box-tools pull-right">
+                         <span data-toggle="tooltip" title="" class="badge bg-yellow" data-original-title="3 New Messages">{{course.messages.count}}</span> 
+                         <button type="button" class="btn btn-box-tool" data-widget="remove">
+                            <a href="{% url 's_class_info' course.id %}"><i class="fa fa-arrow-left fa-2x"></i></a> 
+                        </button> 
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="direct-chat-messages">
+                            <div id="content">
+                               
+                            </div>
+                        <div id="chat">
+
+                        </div>
+
+
+
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                             <div id="chat-input" >
+                                <input class="mb-2 "id="chat-message-input" style="width:83%;height:40px" placeholder="Type Your Message Here....">
+                             <input id="chat-message-submit" type="submit" value="Send" style=" background-color: #FFA500;height:40px ;width:140px ; border-radius: 10px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</section>
+        <script src="{% static 'js/reconnecting-websocket.js' %}"></script>
+        <script
+        src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+        crossorigin="anonymous"></script>
+        <script>
+        $(document).ready(function() {
+            var url = 'ws://' + window.location.host +'/ws/chat/room/' + '{{ course.id }}/';
+            var chatSocket = new WebSocket(url);
+
+
+            chatSocket.onmessage = function(e) {
+                var data = JSON.parse(e.data);
+                var message = data.message;
+                var dateOptions = {hour: 'numeric', minute: 'numeric', hour12: true};
+                var datetime = new Date(data['datetime']).toLocaleString('en',dateOptions);
+                var isMe = data.user === '{{ request.user }}';
+                var source = isMe ? 'me' : 'other';
+                var name = isMe ? 'Me' : data.user;
+                var $chat = $('#chat');
+                $chat.append('<div class="message ' + source + '">' +'<strong>' + name + '</strong> ' +
+                    '<span class="date">' + datetime + '</span><br>' + message +'</div>');
+                $chat.scrollTop($chat[0].scrollHeight);
+            };
+            chatSocket.onclose = function(e) {
+                console.error('Chat socket closed unexpectedly');
+            };
+            chatSocket.onopen = function(e){
+                console.log('websocket is open now')
+
+                $.ajax({
+                    type:'GET',
+                    url : "http://127.0.0.1:8000/ajaxusers/",
+                    dataType: "json",
+                    success:function(response){
+                        console.log(response)   
+                        console.log('ajax run success fully')
+                        var $chat = $('#chat');
+
+                        
+                        for(var key in response)
+                        {   
+                            if (response[key].class_room == '{{course.id}}'){
+                                var dateOptions = {hour: 'numeric', minute: 'numeric', hour12: true};
+                                response[key].timestamp = new Date(response[key].timestamp).toLocaleString('en',dateOptions);
+                                var dateOptions = {hour: 'numeric', minute: 'numeric', hour12: true};
+                                var isMe = response[key].author === '{{ request.user }}';
+                                var source = isMe ? 'me' : 'other';
+                                var name = isMe ? 'Me' : response[key].author;
+
+                                $chat.append('<div class="message ' + source + '">'+'<strong>' + response[key].author + '</strong> ' +
+                                    '<span class="date">' + response[key].timestamp + '</span><br>' + response[key].content +'</div>');    
+                                }    
+                        }
+                        
+                        
+                            
+                        
+                    },
+                    error:function(response){
+                        alert("No Data Found")
+
+                    },
+                });
+
+
+            };
+ 
+            var $input = $('#chat-message-input');
+            var $submit = $('#chat-message-submit');
+            $submit.click(function() {
+                console.log("clicked")
+                var message = $input.val();
+                if(message) {
+                // send message in JSON format
+                chatSocket.send(JSON.stringify({'message': message}));
+                // clear input
+                $input.val('');
+                // return focus
+                $input.focus();
+            }
+        });
+
+
+            $input.focus();
+            $input.keyup(function(e) {
+                if (e.which === 13) {
+                // submit with enter / return key
+                $submit.click();
+            }
+        });
+
+        });
+        </script>   
+
+
+{%endblock content%} 
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

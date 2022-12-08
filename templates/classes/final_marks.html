@@ -1,0 +1,51 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/class_info.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static '/css/student_work.css' %}">	
+{% include 'side_panel.html' %}
+<div class="container" style="margin-top:80px">
+	<div class="row">
+		<div class="col">
+  			<div class="card-counter success">
+        		<i class="fa fa-address-card"></i>
+        		<span class="count-numbers">{{student.student.first_name}} {{student.student.last_name}}</span>
+        		<span class="count-name">{{student.class_room}}</span>
+      		</div>
+  		</div>
+  	</div>
+  	<hr style="border-top: 1px solid tomato;margin-top:10px;">
+	<div class="card border-success">
+		<div class="card-header text-center">
+			<h4>Mid term & Final term marks</h4>
+		</div> 
+		<div class="card-body">
+			<form method="POST">
+				{% csrf_token %}
+				<div class="row">
+					<div class="col">
+						{{form.mid_marks|as_crispy_field}}
+					</div>
+					<div class="col">
+						{{form.mid_marks_out_of|as_crispy_field}}
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						{{form.final_marks|as_crispy_field}}
+					</div>
+					<div class="col">
+						{{form.final_marks_out_of|as_crispy_field}}
+					</div>
+				</div>
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+{% endblock content %}

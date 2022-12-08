@@ -1,0 +1,293 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load filename %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/class_info.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static '/css/student_work.css' %}">
+<section style="margin-top:75px">
+	{% include 'side_panel.html' %}
+	<div class="container text-center">
+		<a href="{% url 'class_info' class.id %}"><h5> {{class.class_name}}</h5></a>
+		<h5>{{assignment.title}}</h5>
+		<h6>Total Points: {{assignment.points}}</h6>
+	</div>
+
+	<hr style="border-top: 1px solid tomato;margin-top:10px;">
+
+    <div class="row">
+
+    	<!-- Turned in students section -->
+
+        <div class="col-lg-4">
+          <div class="articles card">
+            <div class="card-close">
+              <div class="dropdown">
+                <button type="button" id="closeCard4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
+                <div aria-labelledby="closeCard4" class="dropdown-menu dropdown-menu-right has-shadow"><a href="#" class="dropdown-item remove"> <i class="fa fa-times"></i>Close</a><a href="#" class="dropdown-item edit"> <i class="fa fa-gear"></i>Edit</a></div>
+              </div>
+            </div>
+            <div class="card-header d-flex align-items-center">
+              	<div class="container ml-1 mt-1">
+									<h6>Turned in Students <span class="badge badge-dark">{{submissions.count}}</span></h6>
+								</div>
+            </div>
+            <div class="card-body no-padding">
+            	{% for submission in submissions %}
+              <div class="item d-flex align-items-center">
+                <div class="image"><img src="{{submission.student.student.userprofile.profile_pic.url}}" alt="..." class="img-fluid rounded-circle"></div>
+                <div class="text"><a href="#">
+                    <h3 class="h5">{{submission.student}}</h3></a><small>Submitted at. {{submission.submitted_at}}</small></div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Students work section -->
+
+        <div class="col-lg-8">
+          <div class="articles card">
+            <div class="card-close">
+              <div class="dropdown">
+                <button type="button" id="closeCard4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-ellipsis-v"></i></button>
+                <div aria-labelledby="closeCard4" class="dropdown-menu dropdown-menu-right has-shadow"><a href="#" class="dropdown-item remove"> <i class="fa fa-times"></i>Close</a><a href="#" class="dropdown-item edit"> <i class="fa fa-gear"></i>Edit</a></div>
+              </div>
+            </div>
+            <div class="card-header d-flex align-items-center">
+              	<div class="container ml-1 mt-1">
+					<h6>Students work</h6>
+				</div>
+            </div>
+            <div class="card-body no-padding">
+            	<div class="row p-4">
+            		<div class="col-md-2 text-center">
+            			<h6 style="font-size:35px">{{submissions.count}}</h6>
+            			<h6><small class="text-muted">Turned in</small></h6> 
+            		</div>
+            		<div style="border-left:1px solid tomato"></div> 
+            		<div class="col-md-2 text-center">
+            			<h6 style="font-size:35px">{{ungraded_sub}}</h6>
+            			<h6><small class="text-muted">Ungraded</small></h6>
+            		</div>
+            	</div>
+            	{% for submission in submissions %}
+              <div class="item d-flex align-items-center col-md-5">
+                <div class="image"><img src="{{submission.student.student.userprofile.profile_pic.url}}" alt="..." class="img-fluid rounded-circle">
+                </div>
+                <div class="text"><a href="#">
+                    <h3 class="h5">{{submission.student}}</h3></a><small>Submitted at. {{submission.submitted_at}}</small>
+                </div>
+              </div>
+              <div class="row">
+	            <div class="col-md-4">
+	            	<div class="card rounded p-1 " style="background-color:#ebdecc;font-size:small;">
+	            		<p class="text-center">
+										<span style="color:tomato"><i class="fas fa-file-alt fa-2x"></i></span>
+										<a href="{{ submission.file.url }}">Download File</a>
+										{{submission.file|getfilename}}
+									</p>
+	            	</div>
+	            </div>
+	            <div class="col-md-3">
+	            	<div class="card rounded p-1">
+	            		<h6>Points</h6>
+	            		{% if submission.grade != 000 %}
+		                  <div class="row">
+		                  	<div class="col-md-6 text-center" style="font-size:22px;">{{ submission.grade }}/{{submission.assignment.points}}</div>
+		                  	<div style="border-left:1px solid tomato"></div>
+		                  	<div class="col-md-5 text-center">
+		                  		<i class="fa fa-pencil fa-2x" id="edit-pencil" aria-hidden="true" data-toggle="modal" data-target="#updategrademodal-{{submission.id}}"></i>
+		                  	</div>
+		                  </div>
+		                {% else %}
+		                  <div class="row">
+		                  	<div class="col-md-6 text-center text-muted">
+		                  		<small>Not graded</small>
+		                    </div>
+		                    <div style="border-left:1px solid tomato"></div>
+		                  	<div class="col-md-5 text-center">
+		                  		<i class="fa fa-pencil fa-2x" id="edit-pencil"aria-hidden="true" data-toggle="modal" data-target="#grademodal-{{submission.id}}"></i>
+		                  	</div>
+		                  </div>
+		                {% endif %}
+	            	</div>
+	            </div>
+	            <div class="col-md-5">
+	            	<div class="card rounded p-1">
+	            		<h6>Feedback</h6>
+	            		{% if submission.feedback != 'No feedback yet' %}
+	            		<div class="row">
+	            			<div class="col-md-8 text-center" style="font-size:12px">
+	            				{{submission.feedback}}
+	            			</div>
+	            			<div style="border-left:1px solid tomato"></div>
+	            			<div class="col-md-3 text-center">
+	            				<i class="fa fa-pencil fa-2x" id="edit-pencil"aria-hidden="true" data-toggle="modal" data-target="#updatefeedbackmodal-{{submission.id}}"></i>
+	            			</div>
+	            		</div>
+	            		{% else %}
+	            		<div class="row">
+	            			<div class="col-md-8 text-center text-muted">
+	            				<small>No feedback yet</small>
+	            			</div>
+	            			<div style="border-left:1px solid tomato"></div>
+	            			<div class="col-md-3 text-center">
+	            				<i class="fa fa-pencil fa-2x" id="edit-pencil"aria-hidden="true" data-toggle="modal" data-target="#feedbackmodal-{{submission.id}}"></i>
+	            			</div>
+	            		</div>
+            			{% endif %}
+	            	</div>
+	            </div>
+	            
+	      	  </div>
+
+	      	  {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- End of students work -->
+        
+    </div>
+
+
+
+    <!-- Grade Submission modal -->
+	
+	{% for submission in submissions %}
+    <div class="modal fade" id="grademodal-{{submission.id}}">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+		  
+		    <!-- Modal Header -->
+		    <div class="modal-header">
+		      <h4 class="modal-title">Grade Submission</h4>
+		      <button type="button" class="close" data-dismiss="modal">&times;</button>
+		    </div>
+		    
+
+		    <form method="POST",action="", enctype="multipart/form-data">
+		    	<!-- Modal body -->
+			    <div class="modal-body">
+		    		{% csrf_token %}
+		      		{{grade_form|crispy}}
+			    </div>
+			    
+			    <!-- Modal footer -->
+			    <div class="modal-footer">
+			      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+			      <button type="submit" class="btn btn-outline-success" name="submit-grade" value="{{submission.id}}">Save</button>
+			    </div>
+		    </form>
+		    
+		  </div>
+		</div>
+	</div>
+	{% endfor %}
+
+	<!-- Update grade submission modal -->
+	
+	{% for submission in submissions %}
+    <div class="modal fade" id="updategrademodal-{{submission.id}}">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+		  
+		    <!-- Modal Header -->
+		    <div class="modal-header">
+		      <h4 class="modal-title">Update Grade Submission for {{submission.user.username}}</h4>
+		      <button type="button" class="close" data-dismiss="modal">&times;</button>
+		    </div>
+		    
+
+		    <form method="POST",action="", enctype="multipart/form-data">
+		    	<!-- Modal body -->
+			    <div class="modal-body">
+		    		{% csrf_token %}
+		      		{{grade_form|crispy}}
+			    </div>
+			    
+			    <!-- Modal footer -->
+			    <div class="modal-footer">
+			      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+			      <button type="submit" class="btn btn-outline-success" name="submit-grade" value="{{submission.id}}">Save</button>
+			    </div>
+		    </form>
+		    
+		  </div>
+		</div>
+	</div>
+	{% endfor %}
+
+	<!-- feedback submission modal -->
+	
+	{% for submission in submissions %}
+    <div class="modal fade" id="feedbackmodal-{{submission.id}}">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+		  
+		    <!-- Modal Header -->
+		    <div class="modal-header">
+		      <h4 class="modal-title">Feedback Submission for {{submission.user.username}}</h4>
+		      <button type="button" class="close" data-dismiss="modal">&times;</button>
+		    </div>
+		    
+
+		    <form method="POST",action="", enctype="multipart/form-data">
+		    	<!-- Modal body -->
+			    <div class="modal-body">
+		    		{% csrf_token %}
+		      		{{feedback_form|crispy}}
+			    </div>
+			    
+			    <!-- Modal footer -->
+			    <div class="modal-footer">
+			      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+			      <button type="submit" class="btn btn-outline-success" name="submit-feedback" value="{{submission.id}}">Save</button>
+			    </div>
+		    </form>
+		    
+		  </div>
+		</div>
+	</div>
+	{% endfor %}
+	
+	<!-- Update feedback submission modal -->
+	
+	{% for submission in submissions %}
+    <div class="modal fade" id="updatefeedbackmodal-{{submission.id}}">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+		  
+		    <!-- Modal Header -->
+		    <div class="modal-header">
+		      <h4 class="modal-title">Update feedback Submission for {{submission.user.username}}</h4>
+		      <button type="button" class="close" data-dismiss="modal">&times;</button>
+		    </div>
+		    
+
+		    <form method="POST",action="", enctype="multipart/form-data">
+		    	<!-- Modal body -->
+			    <div class="modal-body">
+		    		{% csrf_token %}
+		      		{{feedback_form|crispy}}
+			    </div>
+			    
+			    <!-- Modal footer -->
+			    <div class="modal-footer">
+			      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+			      <button type="submit" class="btn btn-outline-success" name="submit-feedback" value="{{submission.id}}">Save</button>
+			    </div>
+		    </form>
+		    
+		  </div>
+		</div>
+	</div>
+	{% endfor %}
+</section>
+
+
+
+{% endblock %}

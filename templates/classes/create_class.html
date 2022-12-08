@@ -1,0 +1,305 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load materialize %}
+
+{% block content %}
+
+
+<style>
+	.card-title i{
+		display: inline-block;
+		font-size: 16px;
+		color: #007bff;
+		text-align: center;
+		border: 1px solid #007bff;
+		width: 30px;
+		height: 30px;
+		line-height: 30px;
+		border-radius: 50%;
+		margin:0 5px;
+	}
+	.card-title i:hover{
+		color:#3366cc;
+		background-color:#007bff;
+	}
+	#title_image{
+		max-width:100%;
+		max-height:169px;
+		margin: 0 auto;
+        
+	}
+	#cardshadow{
+      background-color: #ffffff;
+      box-shadow:  0 0 10px  rgba(0,0,0,0.6);
+      -moz-box-shadow: 0 0 10px  rgba(0,0,0,0.6);
+      -webkit-box-shadow: 0 0 10px  rgba(0,0,0,0.6);
+      -o-box-shadow: 0 0 10px  rgba(0,0,0,0.6);
+	}
+	.nav-tabs .nav-link.active {
+    	font-weight:bold;
+    	background-color: transparent;
+    	border-bottom:3px solid #dd0000;
+    	border-right: none;
+    	border-left: none;
+    	border-top: none;
+	}
+	.avatar {
+		vertical-align: middle;
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+	}
+	.card:hover{
+     	transform: scale(1.07);
+  		box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+	}
+
+
+	/* Avatar group css */
+  .avatar-group.avatar-group-lg.avatar-group-overlapped .avatar {
+    margin-right: -15px;
+  }
+  .avatar-group.avatar-group-lg .avatar {
+    font-size: .95rem;
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+  .avatar-group {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+  }
+
+  .avatar-group .avatar {
+      font-size: .9rem;
+      width: 2.625rem;
+      height: 2.625rem;
+  }
+  .avatar .avatar-img {
+    width: 100%;
+    height: 100%;
+    -o-object-fit: cover;
+    object-fit: cover;
+  }
+
+  /*notification list css*/
+  .list-group {
+  	font-size: 13px;
+  }
+	
+/*.header {
+  position: fixed;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  background-color: #f1f1f1;
+}
+
+.progress-container {
+  width: 100%;
+  height: 8px;
+  background: #ccc;
+}
+
+
+.progress-bar {
+  height: 8px;
+  background: #F06529;
+  width: 0%;
+}*/  
+
+</style>
+
+
+<div class="row justify-content-center" style="margin-top:90px" >
+	<button style="margin-right:5px;" class="btn btn-outline-info" data-toggle="modal" data-target="#myModalCreate" ><i class="fa fa-plus-circle"></i> Create Class</button>
+	<button class="btn btn-outline-info" data-toggle="modal" data-target="#myModalJoin" ><i class="fa fa-handshake-o"></i> Join Class</button>
+</div>
+
+<!-- The Modal Create Classroom -->
+<div class="modal fade" id="myModalCreate">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+	  
+	    <!-- Modal Header -->
+	    <div class="modal-header">
+	      <h4 class="modal-title">Create a new Classroom</h4>
+	      <button type="button" class="close" data-dismiss="modal">&times;</button>
+	    </div>
+	    
+
+	    <form method="POST",action="", enctype="multipart/form-data">
+	    	<!-- Modal body -->
+		    <div class="modal-body">
+	    		{% csrf_token %}
+	      		{{form|crispy}}
+		    </div>
+		    
+		    <!-- Modal footer -->
+		    <div class="modal-footer">
+		      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+		      <button type="submit" class="btn btn-outline-success" name="create_classroom">Save</button>
+		    </div>
+	    </form>
+	    
+	  </div>
+	</div>
+</div>
+
+
+<!-- The Modal Join Classroom -->
+<div class="modal fade" id="myModalJoin">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+	  
+	    <!-- Modal Header -->
+	    <div class="modal-header">
+	      <h4 class="modal-title">Enroll in a new Classroom</h4>
+	      <button type="button" class="close" data-dismiss="modal">&times;</button>
+	    </div>
+	    {% for msg in messages %}
+        <p class="text-success">{{msg}}</p>
+        {% endfor %}
+
+	    <form method="POST",action="", enctype="multipart/form-data">
+	    	<!-- Modal body -->
+		    <div class="modal-body">
+	    		{% csrf_token %}
+	      		{{join_class_form|crispy}}
+		    </div>
+		    
+		    <!-- Modal footer -->
+		    <div class="modal-footer">
+		      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+		      <button type="submit" class="btn btn-outline-success" name="join_classroom">Join Classroom</button>
+		    </div>
+	    </form>
+	    
+	  </div>
+	</div>
+</div>
+
+
+{# ----------------created classes----------------------------- #}
+
+
+
+<div class="container">
+	<div class="row" style="margin-top:20px">
+		{% for class in classes_created %}
+		
+		<div class="col-md-3" style="margin-top:20px">
+			<div class="card" id="cardshadow" >
+				<a href="{% url 'class_info' class.id %}">
+				<img class="card-img-top" id="title_image" src="{{class.title_image.url}}" >
+				<div class="card-body"></a>
+					<h5 class="card-title">
+						{{class.class_name}}
+						{% if forloop.counter == 1 %}
+						<i class="fa fa-info float-right" title="Info" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}" aria-expanded="false"aria-controls="collapse{{ forloop.counter }}"></i>
+						<!-- <small class="text-muted float-right">info</small> -->
+
+						{%else%}
+
+						<i class="fa fa-info float-right"title="Info" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}" aria-expanded="false"aria-controls="collapse{{ forloop.counter }}"></i>
+						
+						{% endif %}
+					</h5>
+					
+					<hr style="border-top: 1px solid #8c8b8b;">
+					
+					<div id="collapse{{ forloop.counter }}" class="collapse">
+						<p class="card-text"><small class="text-muted">Class Created : {{class.date_created}}</small></p>
+						<p class="card-text"><small class="text-muted">Section : {{class.section}}</small></p>
+						<p class="card-text"><small class="text-muted">Subject : {{class.subject}}</small></p>
+						<hr style="border-top: 1px solid #8c8b8b;">
+					</div>
+
+					<!-- Avatar group of students joined  -->
+					{% for std in class.student_set.all|slice:":3" %}
+					<div class="avatar-group avatar-group-lg avatar-group-overlapped mr-40 mt-25">
+					    <div class="avatar">
+					        <img src="{{std.student.userprofile.profile_pic.url}}" alt="user" class="avatar-img rounded-circle">
+					    </div>
+					</div>
+					{% endfor %}
+					<span class="float-right text-success mt-2">Enrolled Students {{class.student_set.count}}</span>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+
+
+
+{# ----------------------joined classes-------------------------- #}
+
+<div class="container">
+	<div class="row" style="margin-top:20px">
+		{% for class in classes_joined %}
+		
+		<div class="col-md-3" style="margin-top:20px">
+			<div class="card" id="cardshadow" >
+				<a href="{% url 's_class_info' class.id %}">
+					<img class="card-img-top" id="title_image" src="{{class.title_image.url}}">
+				</a>
+				<div class="card-body">
+					<h5 class="card-title">
+						{{class.class_name}}
+						<i class="fa fa-info float-right" title="Info" data-toggle="collapse" data-target="#collapse{{class.id}}" aria-expanded="false" aria-controls="collapse{{class.id}}"></i>
+					</h5>
+					<hr style="border-top: 1px solid #8c8b8b;">
+					
+					<div id="collapse{{class.id}}" class="collapse">
+						<p class="card-text"><small class="text-muted">Class Created : {{class.date_created}}</small></p>
+						<p class="card-text"><small class="text-muted">Section : {{class.section}}</small></p>
+						<p class="card-text"><small class="text-muted">Subject : {{class.subject}}</small></p>
+						<hr style="border-top: 1px solid #8c8b8b;">
+					</div>
+					<div class="text-center">
+						<button class="btn btn-outline-info btn-sm mb-3"  data-toggle="collapse" data-target="#collapsee{{class.id}}" aria-expanded="false" aria-controls="collapsee{{class.id}}">
+							<i class="fa fa-bell mr-2" aria-hidden="true">
+							</i>Notifications
+						</button>
+						<span class="badge badge-danger ml-2 pt-3">	
+							{{class.notification_set.count}}
+						</span>
+						{% for n in class.notification_set.all %}
+					</div>
+					<div class="collapse mb-2" id="collapsee{{class.id}}">
+						<ul class="list-group list-group-flush">
+						  <li class="list-group-item list-group-item-secondary"> from {{n.user}}. {{n.title}} <a href="{% url 's_assignment_detail' n.class_room.id n.assignment.id %}">{{n.assignment}}</a> 
+						  	<a href="{% url 'delete_notification' n.id %}"> (Mark as Read)</a>
+						  </li>
+						</ul>
+						{% endfor %}
+					</div>
+
+					<!-- Avatar group of class joined students  -->
+					{% for s in class.student_set.all|slice:":4" %}
+					<div class="avatar-group avatar-group-lg avatar-group-overlapped mr-40 mt-25">
+					    <div class="avatar">
+					        <img src="{{s.student.userprofile.profile_pic.url}}" alt="user" class="avatar-img rounded-circle">
+					    </div>
+					</div>
+					{% endfor %}
+					<span class="float-right text-success mt-2">+{{class.student_set.count}} other{{class.student_set.count|pluralize}} Joined</span>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+<!-- <script type="text/javascript">
+	window.onscroll = function() {myFunction()};
+
+	function myFunction() {
+	  var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+	  var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+	  var scrolled = (winScroll / height) * 100;
+	  document.getElementById("myBar").style.width = scrolled + "%";
+	}
+</script> -->
+{% endblock content %}

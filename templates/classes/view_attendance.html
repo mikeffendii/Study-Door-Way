@@ -1,0 +1,68 @@
+{% extends 'main.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+
+
+
+
+<link rel="stylesheet" type="text/css" href="{% static '/css/class_info.css' %}">
+{% include 'side_panel.html' %}
+
+
+
+<div class="container" style="margin-top:90px">
+	<div class="card text-center">
+		<div class="card-header">
+			
+			<h5 class="card-title">Select date to view Attendance</h5>
+			<form method="POST">
+				{% csrf_token %}	
+				<input type="date" name="attendance_date" required>
+				<button class="btn btn-outline-dark" type="submit">Search</button>
+			</form>
+			<a href="{% url 'export_excel' class_room.id %}">Export Attendance in Excel File</a>
+		</div>
+		<div class="card-body table-responsive p-0">
+		  <table class="table table-sm table-hover text-nowrap">
+		  	<thead class="thead-light">
+					<tr>
+						<th>Student Name</th>
+						<th>Attendance Date</th>
+						<th>Date Joined</th>
+						<th>Email</th>
+						<th>Attendance</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for att in data %}
+					<tr>
+						<td>{{att.student.student.first_name}} {{att.student.student.last_name}}</td>
+						<td>{{att.created_at}}</td>
+						<td>{{att.student.added_at}}</td>
+						<td>{{att.student.student.email}}</td>
+						{% if att.attendance == 'P'%}
+						<td style="color:green">P</td>
+						<td><a href="{% url 'edit_attendance' class_room.id att.id %}">Edit</a></td>
+						{% else %}
+						<td style="color:crimson">A</td>
+						<td><a href="{% url 'edit_attendance' class_room.id att.id %}">Edit</a></td>
+						{% endif %}
+					</tr>
+					{% endfor %}
+				</tbody>
+
+		  </table>
+		</div>
+	</div>	
+</div>
+
+
+
+
+
+
+
+{% endblock content %}
+

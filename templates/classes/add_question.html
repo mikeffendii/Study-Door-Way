@@ -1,0 +1,30 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+
+<link rel="stylesheet" type="text/css" href="{% static '/css/class_info.css' %}">
+
+{% include 'side_panel.html' %}
+<div class="container" style="margin-top:85px">
+	<form method="POST">
+		{% csrf_token %}
+		<div class="row">
+			<div class="col-md-4">
+				<h4 class="card-title">Question</h4>
+				{{question_form|crispy}}
+			</div>
+			<div class="col-md-8">
+				<h4 class="card-title">Answer Choices</h4>
+				{{formset|crispy}}
+			</div>
+		</div>
+		<button class="btn btn-dark">Add</button>
+			
+	</form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+<div id="mySidepanel" class="sidepanel">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <div class="list-group">
+	  <a href="#collapse2" data-toggle="collapse" class="list-group-item list-group-item-action fa fa-book">  Classes
+	  </a>
+	  <div id="collapse2" class="panel-collapse collapse">
+      	<a href="{% url 'create_class' %}" class="list-group-item list-group-item-info">
+      	 Joined Classes
+      	 <span class="badge badge-pill badge-info float-right">{{classes_joined|length}}</span> 
+      	</a>
+      	<a href="#" class="list-group-item list-group-item-info">
+      	 Created Classes
+      	 <span class="badge badge-pill badge-info float-right">{{classes_created.count}}</span> 
+      	</a>
+
+      </div>
+
+	  <a href="#collapse1" data-toggle="collapse" class="list-group-item " > <i class="fa fa-plus"></i>  Create Class Work
+	  	<span class="float-right"><i class="fas fa-chevron-circle-down"></i></span>
+	  </a>
+	  <div id="collapse1" class="panel-collapse collapse">
+      	<a href="#" data-toggle="modal" data-target="#addAssignmentModal" class="list-group-item list-group-item-secondary fas fa-file-alt"> Assignment</a>
+      	<a href="#" data-toggle="modal" data-target="#addAssignmentQuizModal" class="list-group-item list-group-item-secondary far fa-file-alt"> Assignment Quiz </a>
+      	<a href="#" class="list-group-item list-group-item-secondary fas fa-question"> Question</a>  
+      </div>
+	  <a href="#" class="list-group-item list-group-item-action" id="editClassLink" data-toggle="modal" data-target="#editClassModal"><i class="fas fa-edit sm"></i>Edit Class</a>
+	  <a href="#" class="list-group-item list-group-item-action" id="deleteClassLink"><i class="fas fa-trash"></i>Delete Class</a>
+	  
+  </div>
+</div>
+<button class="openbtn" onclick="openNav()">&#9776;</button>
+<script>
+	/* Set the width of the sidebar to 250px (show it) */
+	function openNav() {
+	  document.getElementById("mySidepanel").style.width = "300px";
+	}
+
+	/* Set the width of the sidebar to 0 (hide it) */
+	function closeNav() {
+	  document.getElementById("mySidepanel").style.width = "0";
+	}
+</script>

@@ -1,0 +1,57 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static '/css/footer.css' %}">
+  <!-- Site footer -->
+    <footer class="site-footer" style="margin-top:200px; ">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+          	<a href="{% url 'home'%}">
+            	<h6><image src="{% static 'images/nav logo.png' %}" alt="Studydoorway" style="width:150px"></image></h6>
+        	</a>
+            <p class="text-justify">Studydoorway.com is<i> ONLINE PORTAL</i> for University Students and Teachers where Teachers can create a Class just like Google Class Room and can give it’s access to the Students.it is a web application which connect teachers and student .This web portal is a basic need for teachers and students specially in covid-19.It connect students to class and their syllabus in various ways ,connect students through Internet Form to ask a Question ,comment on a certain syllabus part ,review on a course materials ,chat room is available in every class room student on connect to each other and discus a topic with each other.</p>
+          </div>
+
+          <div class="col-xs-6 col-md-3">
+            <h6>Categories</h6>
+            <ul class="footer-links">
+              <li><a href="{% url 'forum_home' %}">C</a></li>
+              <li><a href="{% url 'forum_home' %}">UI Design</a></li>
+              <li><a href="{% url 'forum_home' %}">PHP</a></li>
+              <li><a href="{% url 'forum_home' %}">Java</a></li>
+              <li><a href="{% url 'forum_home' %}">Android</a></li>
+              <li><a href="{% url 'forum_home' %}">Templates</a></li>
+            </ul>
+          </div>
+
+          <div class="col-xs-6 col-md-3">
+            <h6>Quick Links</h6>
+            <ul class="footer-links">
+              <li><a href="{% url 'about_us' %}">About Us</a></li>
+              <li><a href="{% url 'about_us' %}">Contact Us</a></li>
+              <li><a href="{% url 'ask-question' %}">Ask Question</a></li>
+              <li><a href="{% url 'create_class' %}">My Classes</a></li>
+            </ul>
+          </div>
+        </div>
+        <hr>
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-sm-6 col-xs-12">
+            <p class="copyright-text">Copyright &copy; 2021 All Rights Reserved by 
+         <a href="#">Studydoorway.com</a>.
+            </p>
+          </div>
+
+          <div class="col-md-4 col-sm-6 col-xs-12">
+            <ul class="social-icons">
+              <li><a class="facebook" href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+              <li><a class="twitter" href="#"><i class="fa fa-twitter"></i></a></li>
+              <li><a class="dribbble" href="#"><i class="fa fa-dribbble"></i></a></li>
+              <li><a class="linkedin" href="#"><i class="fa fa-linkedin"></i></a></li>   
+            </ul>
+          </div>
+        </div>
+      </div>
+</footer>	

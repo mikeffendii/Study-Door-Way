@@ -1,0 +1,221 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/class_info.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static '/css/rate.css' %}">
+
+
+<link rel="stylesheet" href="https://allyoucan.cloud/cdn/icofont/1.0.1/icofont.css" integrity="sha384-jbCTJB16Q17718YM9U22iJkhuGbS0Gd2LjaWb4YJEZToOPmnKDjySVa323U+W7Fv" crossorigin="anonymous">
+
+<style>
+#m-progress{
+	width: {{master_piece|floatformat:"0"}}%;
+}
+#p-progress{
+	width: {{perfect|floatformat:"0"}}%;
+}
+#vg-progress{
+	width: {{very_good|floatformat:"0"}}%;
+}
+#g-progress{
+	width: {{good|floatformat:"0"}}%;
+}
+#u-progress{
+	width: {{understandable|floatformat:"0"}}%;
+}
+#o-progress{
+	width: {{ok|floatformat:"0"}}%;
+}
+#b-progress{
+	width: {{bad|floatformat:"0"}}%;
+}
+#t-progress{
+	width: {{terible|floatformat:"0"}}%;
+}
+#h-progress{
+	width: {{horible|floatformat:"0"}}%;
+}
+</style>
+<div class="container" style="margin-top:80px">
+<div class="col-md-12">
+    <div class="offer-dedicated-body-left">
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade active show" id="pills-reviews" role="tabpanel" aria-labelledby="pills-reviews-tab">
+                <div id="ratings-and-reviews" class="bg-white rounded shadow-sm p-4 mb-4 clearfix restaurant-detailed-star-rating">
+                    <span class="star-rating float-right">
+                              <a href="#"><i class="icofont-ui-rating icofont-2x active"></i></a>
+                              <a href="#"><i class="icofont-ui-rating icofont-2x active"></i></a>
+                              <a href="#"><i class="icofont-ui-rating icofont-2x active"></i></a>
+                              <a href="#"><i class="icofont-ui-rating icofont-2x active"></i></a>
+                              <a href="#"><i class="icofont-ui-rating icofont-2x"></i></a>
+                              </span>
+                    <h5 class="mb-0 pt-1">Review this Classroom <span class="badge badge-dark">{{class.class_name}}</span></h5>
+                </div>
+
+
+                <div class="bg-white rounded shadow-sm p-4 mb-4 clearfix graph-star-rating">
+                    <h5 class="mb-0 mb-4">Add your Review</h5>
+                    <form method="POST">
+                    	{% csrf_token %}
+                    	{{form|crispy}}
+                    	<div class="graph-star-rating-footer text-center mt-3 mb-3">
+                        	<button type="submit" class="btn btn-outline-primary btn-sm">Rate and Review</button>
+                    	</div>
+                	</form>
+                </div>
+
+                <div class="bg-white rounded shadow-sm p-4 mb-4 clearfix graph-star-rating">
+                    <h5 class="mb-0 mb-4">Ratings and Reviews</h5>
+                    <div class="graph-star-rating-header">
+                        <div class="star-rating">
+                           <b class="text-black ml-2">Total Reviews <span class="badge badge-primary">{{reviews.count}}</span> </b>
+                        </div>
+                        
+                        <hr>
+                    </div>
+                    <div class="graph-star-rating-body">
+                        <div class="rating-list">
+                            <div class="rating-list-left text-black">
+                                10 - Masterpiece
+                            </div>
+                            <div class="rating-list-center">
+                                <div class="progress">
+                                    <div  aria-valuemax="100" aria-valuemin="0" aria-valuenow="75" role="progressbar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="m-progress">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rating-list-right text-black">{{master_piece|floatformat:"0"}}%</div>
+                        </div>
+                        <div class="rating-list">
+                            <div class="rating-list-left text-black">
+                                9 - Perfect
+                            </div>
+                            <div class="rating-list-center">
+                                <div class="progress">
+                                    <div aria-valuemax="5" aria-valuemin="0" aria-valuenow="5" role="progressbar" class="progress-bar bg-primary" id="p-progress">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rating-list-right text-black">{{perfect|floatformat:"0"}}%</div>
+                        </div>
+                        <div class="rating-list">
+                            <div class="rating-list-left text-black">
+                                8 - Very Good
+                            </div>
+                            <div class="rating-list-center">
+                                <div class="progress">
+                                    <div aria-valuemax="5" aria-valuemin="0" aria-valuenow="5" role="progressbar" class="progress-bar bg-primary" id="vg-progress">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rating-list-right text-black">{{very_good|floatformat:"0"}}%</div>
+                        </div>
+                        <div class="rating-list">
+                            <div class="rating-list-left text-black">
+                                7 - Good
+                            </div>
+                            <div class="rating-list-center">
+                                <div class="progress">
+                                    <div aria-valuemax="5" aria-valuemin="0" aria-valuenow="5" role="progressbar" class="progress-bar bg-primary" id="g-progress">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rating-list-right text-black">{{good|floatformat:"0"}}%</div>
+                        </div>
+                        <div class="rating-list">
+                            <div class="rating-list-left text-black">
+                                6 - Understandable
+                            </div>
+                            <div class="rating-list-center">
+                                <div class="progress">
+                                    <div aria-valuemax="5" aria-valuemin="0" aria-valuenow="5" role="progressbar" class="progress-bar bg-warning" id="u-progress">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rating-list-right text-black">{{understandable|floatformat:"0"}}%</div>
+                        </div>
+                        <div class="rating-list">
+                            <div class="rating-list-left text-black">
+                                5 - OK
+                            </div>
+                            <div class="rating-list-center">
+                                <div class="progress">
+                                    <div aria-valuemax="5" aria-valuemin="0" aria-valuenow="5" role="progressbar" class="progress-bar bg-warning" id="o-progress">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rating-list-right text-black">{{ok|floatformat:"0"}}%</div>
+                        </div>
+                        <div class="rating-list">
+                            <div class="rating-list-left text-black">
+                                4 - Bad
+                            </div>
+                            <div class="rating-list-center">
+                                <div class="progress">
+                                    <div aria-valuemax="5" aria-valuemin="0" aria-valuenow="5" role="progressbar" class="progress-bar bg-warning"id="b-progress">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rating-list-right text-black">{{bad|floatformat:"0"}}%</div>
+                        </div>
+                        <div class="rating-list">
+                            <div class="rating-list-left text-black">
+                                3 - Terrible
+                            </div>
+                            <div class="rating-list-center">
+                                <div class="progress">
+                                    <div aria-valuemax="5" aria-valuemin="0" aria-valuenow="5" role="progressbar" class="progress-bar bg-danger" id="t-progress">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rating-list-right text-black">{{terible|floatformat:"0"}}%</div>
+                        </div>
+                        <div class="rating-list">
+                            <div class="rating-list-left text-black">
+                                2 - Horrible
+                            </div>
+                            <div class="rating-list-center">
+                                <div class="progress">
+                                    <div aria-valuemax="100" aria-valuemin="0" aria-valuenow="5" role="progressbar" class="progress-bar bg-danger" id="h-progress">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rating-list-right text-black">{{horible|floatformat:"0"}}%</div>
+                        </div>
+                    </div>
+                    <div class="graph-star-rating-footer text-center mt-3 mb-3">
+                        <button type="button" class="btn btn-outline-primary btn-sm">Rate and Review</button>
+                    </div>
+                </div>
+                <div class="bg-white rounded shadow-sm p-4 mb-4 restaurant-detailed-ratings-and-reviews">
+                    <a href="#" class="btn btn-outline-primary btn-sm float-right">Top Rated</a>
+                    <h5 class="mb-1">All Ratings and Reviews</h5>
+                    {% for r in reviews %}
+                    <div class="reviews-members pt-4 pb-4">
+                        <div class="media">
+                            <a href="#"><img alt="Generic placeholder image" src="{{r.user.userprofile.profile_pic.url}}" class="mr-3 rounded-pill"></a>
+                            <div class="media-body">
+                                <div class="reviews-members-header">
+                                    <h6 class="mb-1"><a class="text-black" href="#">{{r.user.first_name}} {{r.user.last_name}}</a></h6>
+                                    <p class="text-gray">{{r.date}}</p>
+                                </div>
+                                <div class="reviews-members-body">
+                                    <p>{{r.text}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    {% endfor %}
+                    <a class="text-center w-100 d-block mt-4 font-weight-bold" href="#">See All Reviews</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+{% endblock content %}

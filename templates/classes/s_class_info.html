@@ -1,0 +1,514 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+
+
+
+{% block content %}
+<style>
+#a-p{
+	width: {{assignment_per|floatformat:"2"}}%;
+}
+#q-p{
+	width: {{quizes_per|floatformat:"2"}}%;
+}
+#m-p{
+	width: {{mid_per|floatformat:"2"}}%;
+}
+#f-p{
+	width: {{final_per|floatformat:"2"}}%;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="{% static '/css/class_info.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static '/css/s_class_info.css' %}">
+<script src="{% static 'quizes/quizes_main.js' %}" defer></script>
+<div class="container" style="margin-top:75px">
+    <div class="row">
+        <div class="col-md-12 ">
+            <nav class="nav-justified ">
+              <div class="nav nav-tabs " id="nav-tab" role="tablist">
+                <a class="nav-item nav-link active" id="pop1-tab" data-toggle="tab" href="#pop1" role="tab" aria-controls="pop1" aria-selected="true">Stream</a>
+                <a class="nav-item nav-link" id="pop2-tab" data-toggle="tab" href="#pop2" role="tab" aria-controls="pop2" aria-selected="false">Class Work</a>
+                <a class="nav-item nav-link" id="pop3-tab" data-toggle="tab" href="#pop3" role="tab" aria-controls="pop3" aria-selected="false">People</a>
+                <!-- <a class="nav-item nav-link" id="pop3-tab" data-toggle="tab" href="#pop3" role="tab" aria-controls="pop3" aria-selected="false">Grades</a> -->
+                
+              </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+              	<div class="tab-pane fade show active" id="pop1" role="tabpanel" aria-labelledby="pop1-tab">
+                    <div class="pt-3"></div>
+				    	<div class="row ">
+				    		<div class="col-md-12">
+				    		    <div class="card profile-card-2 rounded" id="cardshadow">
+				                    <div class="card-img-block">
+				                        <img class="img-fluid rounded" src="{{class.title_image.url}}" alt="Card image cap" />
+				                    </div>
+				                    <div class="card-body pt-4">
+				                        <img src="{{class.user.userprofile.profile_pic.url}}" alt="profile-image" class="profile"/>
+				                        <h4 class="card-title">{{class.class_name}}</h4>
+				                        <p class="card-text" style="text-align:left;">last updated<i class="fa fa-clock-o" aria-hidden="true"></i>{{class.last_updated|timesince}} ago</p>
+				                        <hr style="border-top: 1px solid #F06529;">
+				                        <p class="">This class has been created by <b>{{class.user.first_name}}</b> on <strong>{{class.date_created}}</strong></p>
+				                        <a href="{% url 'rate' class.id %}" class="mr-3">Add Review</a>
+				                        <span class="fa fa-star checked"></span>
+				                        <span class="fa fa-star checked"></span>
+										<span class="fa fa-star checked"></span>
+										<span class="fa fa-star checked"></span>
+										<span class="fa fa-star"></span>
+										
+				                    </div>
+				                </div>
+				    		</div>						    		
+				    	</div>
+
+
+
+				    	<div class="container">
+	                      	<div class="row" >
+					    		<div class="col-md-2 rounded" id="cardshadow" style="margin-top:20px;margin-right:20px;overflow: auto;height:300px;">
+					    			<h6 class="card-title p-1 m-1">Upcoming</h6>
+					    			{% if assignments %}
+					    			{% for assignment in assignments%}
+					    			<div class="card border-0">
+					    				<div class="card-body">
+					    					<h6 class="card-title">
+					    						{{assignment.title}}
+					    					</h6>
+					    					<i class="fa fa-clock-o" id="time-left"> Time left</i>
+					    					<div class="time-until">
+					    						
+					    						{{assignment.due_date|timeuntil}}
+
+					    					</div>
+					    					
+					    				</div>
+					    			</div>
+					    			<hr style="border-top: 1px solid #F06529;">
+					    			
+					    			{% endfor %}
+					    			{% else %}
+
+					    			<p class="text-muted mt-3" style="font-size:small;text-align:center">Wohoo! No Work</p>
+
+					    			{% endif %}
+					    		</div>
+					    		<div class="col rounded">
+					    			
+
+					    			{% if announcements %}
+					    			{% for announcement in announcements %}
+					    			<div class="row rounded" style="margin-top:20px" id="cardshadow">
+					    				<div class="col rounded">
+					    					
+					    					<div class="d-flex flex-column comment-section" id="myGroup">
+											  <div class="bg-white p-2">
+											      <div class="d-flex flex-row user-info"><img class="rounded-circle" src="{{announcement.user.userprofile.profile_pic.url}}" width="40">
+											          <div class="d-flex flex-column justify-content-start ml-2"><span class="d-block font-weight-bold name">{{announcement.user.first_name}}</span><span class="date text-black-50">Shared publicly - {{announcement.announcement_date|timesince}} ago</span></div>
+											      </div>
+											      <div class="mt-2">
+											          <p class="comment-text">{{announcement.announcement_text}}</p>
+											      </div>
+											      {% if announcement.announcement_file %}
+
+											      <div class="mt-2 rounded" style="width:25%;overflow:hidden" id="cardshadow">
+											      	<div class="col">
+											      		<a href="{{ announcement.announcement_file.url }}" download>
+															<img  src="{% static 'images/files_image.png' %}" widht="40" height="40" alt="Download File">	
+														</a>
+														<a href="{{ announcement.announcement_file.url }}" download>
+															<b style="margin-top:20px;margin-left:20px;font-size:13px">Download Files</b>
+														</a>
+											      	</div>	
+											      	
+											      </div>
+											      {% endif %}
+											  </div>
+											  <div class="bg-white p-2" style="border-top: 1px solid #F06529">
+											      <div class="d-flex flex-row fs-12">
+											      	<form action="{% url 'announcement_likes' announcement.id class.id %}" method="POST" novalidate>
+											      		{% csrf_token %}
+											          <div class="like p-2 cursor">
+											          	{% if request.user not in announcement.likes.all %}
+											          	<button style="background-color: Transparent;" type="submit" name="announcement_id" value="{{ announcement.id }}" class="border-0"><i class="fa fa-thumbs-o-up" ></i><span class="ml-1">like</span> <span class="badge badge-pill badge-info">{{announcement.total_likes}}</span>
+											          	</button>
+											          	{% else %}
+											          	<button style="background-color: Transparent;" type="submit" name="announcement_id" value="{{ announcement.id }}" class="border-0"><i class="fa fa-thumbs-o-up" ></i><span class="ml-1">Unlike</span> <span class="badge badge-pill badge-info">{{announcement.total_likes}}</span>
+											          	</button> 
+											          	{% endif %}
+
+											          </div>
+											        </form>
+											          <div class="like p-2 cursor action-collapse" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-1{{announcement.id}}" href="#collapse-1{{announcement.id}}"><i class="far fa-comment-dots"></i><span class="ml-1">Comment</span> <span class="badge badge-pill badge-info">{{announcement.comments.all.count}}</span></div>
+											      </div>
+											  </div>
+											  <div id="collapse-1{{announcement.id}}" class="collapse" style="margin-bottom:10px;border-top:1px solid #F06529" data-parent="#myGroup">
+
+											  	{% if not announcement.comments.all %}
+											  	<div class="bg-white p-2 text-center">
+											  		<p>No Comments yet ... Add one </p>
+											  	</div>
+											  	{% else %}
+											  	{% for comment in announcement.comments.all %}
+											  	  <div class="bg-white p-2" style="margin-left:15px;">
+												      <div class="d-flex flex-row user-info"><img class="rounded-circle" src="{{comment.user.userprofile.profile_pic.url}}" width="40" style="border:1px solid #F06529">
+												          <div class="d-flex flex-column justify-content-start ml-2"><span class="d-block font-weight-bold name">{{comment.user.first_name}}</span><span class="date text-black-50">Commented - {{comment.comment_date|timesince}} ago</span></div>
+												      </div>
+												      <div class="mt-2 rounded" style="background-color:#f5f0f0">
+												          <p class="comment-text p-1 m-1">{{comment.comment_text}}</p>
+												      </div>
+												  </div>
+												  <hr style="border-top: 1px solid #d1c7c7;">
+												  {% endfor %}
+												  {% endif %}
+
+												  <form method="POST" action="{% url 'announcement_comments' announcement.id class.id %}">
+												  	{% csrf_token %}
+											      <div class="d-flex flex-row align-items-start" style="margin-left:25px;"><img class="rounded-circle" src="{{request.user.userprofile.profile_pic.url}}" width="40"><textarea class="form-control ml-1 shadow-none textarea" name="comment_text" required></textarea></div>
+											      <div class="mt-2 text-right"><button class="btn btn-primary btn-sm shadow-none" type="submit">Post comment <i class="fa fa-paper-plane"></i></button><button class="btn btn-outline-primary btn-sm ml-1 shadow-none" type="button">Cancel</button>
+											      </div>
+											  	  </form>
+											  </div>
+											</div>
+					    				</div>
+					    			</div>
+					    			{% endfor %}
+					    			{% endif %}
+					    		</div>
+						    </div>
+						</div>
+                  	</div>
+              	<div class="tab-pane fade" id="pop2" role="tabpanel" aria-labelledby="pop2-tab">
+                   <div class="pt-3"></div>
+                   <div class="row">
+						<div class="col-md-3">
+				            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+				                
+				                <a class="nav-link active" id="v-pills-assignments-tab" data-toggle="pill" href="#v-pills-assignments" role="tab" aria-controls="v-pills-assignments" aria-selected="true">Assignments</a>
+				                <a class="nav-link" id="v-pills-quizes-tab" data-toggle="pill" href="#v-pills-quizes" role="tab" aria-controls="v-pills-quizes" aria-selected="false">Quizes</a>
+				                <a class="nav-link" id="v-pills-lectures-tab" data-toggle="pill" href="#v-pills-lectures" role="tab" aria-controls="v-pills-lectures" aria-selected="false">Lectures</a>
+				                <a class="nav-link" id="v-pills-links-tab" data-toggle="pill" href="#v-pills-links" role="tab" aria-controls="v-pills-links" aria-selected="false">Links and turorials</a>
+				            </div>
+				        </div>
+				        <div class="col-md-9">
+				        	<div class="tab-content" id="v-pills-tabContent">
+
+				        		<!-- Assignments -->
+
+            					<div class="tab-pane fade show active" id="v-pills-assignments" role="tabpanel" aria-labelledby="v-pills-assignments-tab">
+            						<div class="card border-0" style="max-width: 60rem">
+										<h5 class="card-header text-white mb-3"  style="background: linear-gradient(to right, #3399ff 0%, #ffffff 100%);">Assignments</h5>
+										{% if assignments %}
+										{% for assignment in assignments%}
+										<div class="card border border-dark shadow-0 mb-3" style="max-width: 60rem">
+										  <!-- <div class="card-header">Header</div> -->
+										  <div class="card-body text-dark">
+										    <h4 class="card-title" style="text-align:left;">
+										    	{{assignment.title}}
+										    </h4>
+										    <hr style="border-top: 1px solid #F06529;">
+
+
+										    <div title="Info" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}" aria-expanded="false"aria-controls="collapse{{ forloop.counter }}">
+											    <div class="card-text">
+											    	<p style="text-align:left;"><i class="fas fa-file-alt"></i>
+											    		{{assignment.title}}
+											    		<small class="text-muted">
+											    			Posted {{assignment.assigning_date}}
+											    		</small><i class="fa fa-clock-o" aria-hidden="true"></i>
+											    		<span style="float:right;color:#ff3333">
+											    			Due date: {{assignment.due_date}}
+											    		</span>
+											    	</p>
+											    	
+											    </div>
+											    <div style="clear: both"></div>
+											</div>
+
+											<div id="collapse{{ forloop.counter }}" class="collapse">
+												<p class="card-text">
+													{% if assignment.file %}
+													<a style="margin-right:3px" href="{{ assignment.file.url }}" target="_blank">
+														<i class="fas fa-eye"> view file</i>
+													</a>
+													<a href="{{ assignment.file.url }}">
+														<i class="fas fa-file-download"> download file</i>
+													</a>
+													{% else %}
+													<h6 class="text-muted ml-3">No file included </h6>
+													{% endif %}
+												</p>
+												<p class="card-text">Instructions : <small class="text-muted">{{assignment.instruction}}</small></p>
+												<hr style="border-top: 1px solid #8c8b8b;">
+												<a style="margin-right:3px" href="{% url 's_assignment_detail' class.id assignment.id %}">
+													<i class="fa fa-upload"> Submit Assignment</i>
+												</a>
+												
+											</div>
+
+										  </div>
+										</div>
+										{% endfor %}
+										{% endif %}
+									</div>	
+            					</div>
+
+            					<!-- Quizes Section  -->
+
+            					<div class="tab-pane fade" id="v-pills-quizes" role="tabpanel" aria-labelledby="v-pills-quizes-tab">
+
+									<div class="card border-0 mb-3" style="max-width: 60rem">
+										<div class="card-header text-white"  style="background: linear-gradient(to right, #3399ff 0%, #ffffff 100%);"><h6>Quizes</h6></div>
+										<div class="card-body text-dark">
+									    	<!-- <a href="{% url 'quizes:main-view' %}">Quizes List</a> -->
+									    	<h6 class="card-title">Quizes List</h6>
+									    	{% if quizes %}
+											{% for quiz in quizes %}
+											<div class="row">
+										    	<button
+													class="btn btn-link modal-button"
+													data-pk="{{quiz.pk}}"
+													data-quiz="{{quiz.name}}"
+													data-questions="{{quiz.number_of_questions}}"
+													data-difficulty="{{quiz.difficulty}}"
+													data-time="{{quiz.time}}"
+													data-pass="{{quiz.required_score_to_pass}}"
+													data-class_id="{{quiz.class_room.id}}"
+													data-toggle="modal"
+													data-target="#quizStartModal">
+													{{quiz.name}}
+												</button>
+												<span class="mt-2">uploaded at: {{quiz.created}}</span>
+											</div>
+											{% endfor %}
+											{% endif %}
+										</div>
+									</div>
+            					</div>
+
+            					<!-- Lectures  -->
+
+            					<div class="tab-pane fade" id="v-pills-lectures" role="tabpanel" aria-labelledby="v-pills-lectures-tab">
+            						{% for l in lectures %}
+            						<div class="card border-0 m-3" style="max-width: 60rem">
+										<h5 class="card-header mb-3">{{l.title}}</h5>
+										<div class="card-body">
+											<div class="mt-2 rounded" style="width:25%;overflow:hidden" id="cardshadow">
+										      	<div class="col">
+										      		<a href="{{ l.files.url }}" download>
+														<img  src="{% static 'images/files_image.png' %}" widht="40" height="40" alt="Download File">	
+													</a>
+													<a href="{{ l.files.url }}" download>
+														<b style="margin-top:20px;margin-left:20px;font-size:13px">Download Files</b>
+													</a>
+										      	</div>	 	
+										    </div>
+										</div>
+
+									</div>
+									{% endfor %}
+            					</div>
+				        	</div>
+						</div>
+					</div>
+					<!-- End of side navs -->
+              	</div>
+
+
+              	<!-- Peoples  -->
+
+
+              	<div class="tab-pane fade" id="pop3" role="tabpanel" aria-labelledby="pop3-tab">
+                   	<div class="pt-3"></div>
+					<div class="card border-0">
+						<div class="card-header">
+							<h4>Instructors</h4>
+						</div>
+						
+						<div class="card-body">
+							<h6 class="card-subtitle mb-2 text-muted">{{instructors.count}} Instructor{{instructors.count|pluralize}} are in this course</h6>
+							<p class="card-text">
+								<div class="avatar-group">
+									{% for instructor in instructors %}
+									<div class="row">
+										<div class="col-md-12 ">
+											<a>
+												<div class="chip">
+												  <img src="{{instructor.instructor.userprofile.profile_pic.url}}" alt="Person" width="96" height="96">
+												  <b>{{instructor.instructor.first_name}} {{instructor.instructor.last_name}}</b>
+												</div>
+												
+											</a>
+										</div>
+									</div>
+									{% endfor %}
+								</div>
+							</p>
+						</div>
+					</div>
+					<!-- End of Total Instructors Card  -->
+
+					<!-- Total Students Card  -->
+
+					<div class="card border-0">
+						<div class="card-header">
+							<h4>Students
+								<span class="float-right" style="color:tomato">
+								<a href="{% url 'chat:course_chat_room' class.id %}" }>Student Chat </a> <i class="fa fa-comment-o"></i>
+								</span> 
+							</h4>
+							
+						</div>
+						<div class="card-body">
+							<h6 class="card-subtitle mb-2 text-muted">{{students.count}} student{{students.count|pluralize}} are enrolled in this course</h6>
+							<p class="card-text">
+								<div class="avatar-group">
+									{% for student in students %}
+									<div class="row"  style="border-left:3px solid #F06529;margin-top:5px;">
+										<div class="col-md-12 ">
+											<a>
+												{% if student.student.username == request.user.username %}
+												<div class="chip">
+												  <img src="{{student.student.userprofile.profile_pic.url}}" alt="Person" width="96" height="96">
+												  <b style="color:#8dd457">{{student.student.first_name}} {{student.student.last_name}} (Me)</b>
+												</div>
+												<!-- <img src="{{student.student.userprofile.profile_pic.url}}" alt="Avatar" class="md-avatar rounded-circle">
+												<b class=" font-size-sm" style="color:#8dd457">{{student.student.first_name}} {{student.student.last_name}} (Me)</b> -->
+												<span class="fa fa-clock-o " style="color:#8dd457;font-size:small;">
+													Joined {{student.added_at|timesince}} ago
+												</span>
+												{% else %}
+												<div class="chip">
+												  <img src="{{student.student.userprofile.profile_pic.url}}" alt="Person" width="96" height="96">
+												  <b>{{student.student.first_name}} {{student.student.last_name}}</b>
+												</div>
+												<!-- <img src="{{student.student.userprofile.profile_pic.url}}" alt="Avatar" class="md-avatar rounded-circle">
+												<b class="text-muted font-size-sm">{{student.student.first_name}} {{student.student.last_name}}</b> -->
+												<span class="fa fa-clock-o" style="color:#7bc5ed;font-size:small;">
+													Joined {{student.added_at|timesince}} ago
+												</span>
+												
+												{% endif %}
+											</a>
+										</div>
+									</div>
+									{% endfor %}
+								</div>
+							</p>
+						</div>
+					</div>
+					<!-- End of Total Instructors Card  -->
+              	</div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="card" id="cardshadow" style="margin-top:200px">
+    	<div class="card-header text-white" style="background: linear-gradient(to right, #009999 0%, #9999ff 100%);">
+    		<h4 class="card-title">Student Progress</h4>
+    	</div>
+    	<div class="card-body">
+    		<div class="row">
+    			<div class="col-md-2 text-center mt-4">
+    				{% if grade == "F" %}
+    				You are not doing so great. Try harder.
+    				<h1 class="text-danger">{{grade}}</h1><small class="text-muted">Grade</small>
+    				{% else %}
+    				You are doing great. you deserve <br/>
+    				<h1 class="text-success">{{grade}}</h1><small class="text-muted">Grade</small>
+    				{% endif %}
+    			</div>
+    			<div class="col-md-8">
+    				<div class="progress m-2" style="height:25px">
+					  <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" id="a-p">Assignmnets </div>
+					</div>
+					<div class="progress m-2" style="height:25px">
+					  <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" id="q-p">Quizes  </div>
+					</div>
+					<div class="progress m-2" style="height:25px">
+					  <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" id="m-p">Mid Term  </div>
+					</div>
+					<div class="progress m-2" style="height:25px">
+					  <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" id="f-p">Final Term  </div>
+					</div>
+					<div class="progress m-2" style="height:35px">
+					  <div class="progress-bar progress-bar-striped progress-bar-animated bg-secondary" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" id="f-p">Overall Progress</div>
+					</div>
+    			</div>
+    			<div class="col-md-2 mt-2 text-center">
+    				<h5 class="text-success">{{assignment_per|floatformat:"2"}} %</h5>
+    				<h5 class="text-info">{{quizes_per|floatformat:"2"}} %</h5>
+    				<h5 class="text-warning">{{mid_per|floatformat:"2"}} %</h5>
+    				<h5 class="text-primary">{{final_per|floatformat:"2"}} %</h5>
+    				<h4 class="text-muted">{{total_per|floatformat:"2"}} %</h4>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+
+
+
+</div>
+<br>
+
+
+<style>
+
+.vertical-center {
+  margin top :10px;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+</style>
+
+
+
+    <!-- Start Quiz modal -->
+    <div class="modal fade" id="quizStartModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLabel">Start Quiz ?</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body" id="modal-body-confirm"></div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+	        <button type="button" id="start-button" class="btn btn-success">Yes</button>
+	      </div>
+
+	    </div>
+	  </div>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+	$( document ).ready(function() {
+		console.log('running ')
+		$('a[data-toggle="tab"]').click(function (e) {
+		    e.preventDefault();
+		    $(this).tab('show');
+		});
+
+		$('a[data-toggle="tab"]').on("shown.bs.tab", function (e) {
+		    var id = $(e.target).attr("href");
+		    localStorage.setItem('selectedTab', id)
+		});
+
+		var selectedTab = localStorage.getItem('selectedTab');
+		if (selectedTab != null) {
+		    $('a[data-toggle="tab"][href="' + selectedTab + '"]').tab('show');
+		}
+	});
+</script>
+
+{% endblock content %}
+

@@ -1,0 +1,140 @@
+{% extends 'main.html' %}
+
+{% block title %}All Tags{% endblock %}
+{% block content %}
+
+{% include 'internet_forum_nav.html' %}
+   
+<!-- Search Tag Section -->
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 offset-2">
+            <form>
+                <div class="input-group">
+                    <input type="text" name="t" class="form-control form-control-lg" placeholder="Search" />
+                    <div class="input-group-append">
+                    <button class="btn btn-dark btn-lg" type="submit" id="button-addon3">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="container py-2">
+  <div class="row">
+    <div class="col-md-6">
+      <canvas id="myChart" width="300" height="100"></canvas>
+    </div>
+    <div class="col-md-6">
+      <div class="row mt-4">
+        {% for tag in tags %}
+        <div class="col-md-4 mb-2">
+          <div class="card">
+            <div class="card-body">
+                <p class="card-text">
+                  <a href="/tag/{{tag.name|slugify}}">{{tag.name}} 
+                    <span class="badge badge-info">{{tag.count}}</span>
+                  </a>
+                </p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Question List -->
+
+
+
+{% if quests.has_other_pages %}
+<!-- Pagination -->
+<nav class="my-3 container">
+    <ul class="pagination">
+        {% if quests.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page={{quests.previous_page_number}}">Previous</a></li>
+      {% endif %}
+      {% for i in quests.paginator.page_range %}
+      {% if quests.number == i %}
+      <li class="page-item active"><a class="page-link" href="#">{{i}}</a></li>
+      {% else %}
+      <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+      {% endif %}
+      {% endfor %}
+      {% if quests.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{quests.next_page_number}}">Next</a></li>
+      {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'horizontalBar',
+    data: {
+        labels: [{% for t in tags %}'{{t.name}}',{% endfor %}],
+        datasets: [{
+            label: ['Mentioned'],
+            data: [{% for d in tags %}'{{d.count}}',{% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(245, 129, 95, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(250, 177, 177,0.2)',
+                'rgba(240, 221, 55,0.2)',
+                'rgba(129, 240, 55,0.2)',
+                'rgba(249, 250, 249,0.1)',
+                'rgba(215, 180, 227,0.2)',
+                'rgba(192, 36, 249,0.2)',
+                'rgba(250, 95, 199,0.3)',
+                'rgba(95, 196, 250,0.3)',
+                'rgba(98, 95, 250,0.4)',
+                'rgba(126, 250, 95,0.4)',
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(245, 129, 95, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(250, 177, 177,1)',
+                'rgba(240, 221, 55,1)',
+                'rgba(129, 240, 55,1)',
+                'rgba(249, 250, 249,1)',
+                'rgba(215, 180, 227,1)',
+                'rgba(192, 36, 249,1)',
+                'rgba(250, 95, 199,1)',
+                'rgba(95, 196, 250,1)',
+                'rgba(98, 95, 250,1)',
+                'rgba(126, 250, 95,1)',
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>
+
+
+{% endblock %}
